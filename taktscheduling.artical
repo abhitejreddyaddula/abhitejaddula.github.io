@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What is Takt Scheduling? - Contech Blog</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            padding: 40px 20px;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #0f0;
+            text-decoration: none;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .back-link:hover {
+            transform: translateX(-5px);
+        }
+
+        .article-header {
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #333;
+        }
+
+        .article-meta {
+            color: #0f0;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .article-title {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .article-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            background: #1a1a1a;
+            padding: 5px 12px;
+            font-size: 0.85em;
+            color: #888;
+            border: 1px solid #333;
+        }
+
+        .read-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .article-content {
+            color: #ccc;
+        }
+
+        .article-content h2 {
+            color: #0f0;
+            font-size: 1.8em;
+            margin: 40px 0 20px 0;
+            padding-top: 20px;
+            border-top: 1px solid #222;
+        }
+
+        .article-content h3 {
+            color: #fff;
+            font-size: 1.3em;
+            margin: 30px 0 15px 0;
+        }
+
+        .article-content p {
+            margin-bottom: 20px;
+        }
+
+        .article-content ul, .article-content ol {
+            margin: 20px 0 20px 30px;
+        }
+
+        .article-content li {
+            margin-bottom: 12px;
+        }
+
+        .highlight-box {
+            background: #1a1a1a;
+            border-left: 3px solid #0f0;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .highlight-box strong {
+            color: #0f0;
+        }
+
+        .quote {
+            font-style: italic;
+            color: #888;
+            border-left: 3px solid #333;
+            padding-left: 20px;
+            margin: 30px 0;
+        }
+
+        .conclusion {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #333;
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .article-title {
+                font-size: 1.8em;
+            }
+
+            .article-content h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="blog.html" class="back-link">← Back to Blog</a>
+        
+        <article class="article-header">
+            <div class="article-meta">January 02, 2026 • Abhitej Reddy Addula</div>
+            <h1 class="article-title">What is Takt Scheduling?</h1>
+            <div class="article-tags">
+                <span class="tag">Scheduling</span>
+                <span class="tag">Lean Construction</span>
+                <span class="tag">Productivity</span>
+            </div>
+            <div class="read-time">⏱ 5 min read</div>
+        </article>
+
+        <div class="article-content">
+            <p>Construction projects are notorious for delays, budget overruns, and unpredictable workflows. What if there was a scheduling method that could bring manufacturing-level precision to construction? Enter Takt Planning—a game-changer borrowed from manufacturing that's transforming how we build.</p>
+
+            <h2>The Problem with Traditional Construction Scheduling</h2>
+            
+            <p>Traditional construction scheduling typically follows the Critical Path Method (CPM), which focuses on identifying the longest sequence of dependent activities. While CPM has its merits, it often leads to:</p>
+
+            <ul>
+                <li>Unpredictable trade workflows</li>
+                <li>Constant schedule changes and firefighting</li>
+                <li>Trades working in each other's way</li>
+                <li>Inconsistent productivity</li>
+                <li>Difficulty tracking actual progress</li>
+            </ul>
+
+            <p>The root issue? CPM doesn't inherently create a smooth, predictable flow of work. It tells you what needs to happen and in what order, but it doesn't necessarily optimize how work flows through a building.</p>
+
+            <h2>Enter Takt: The Rhythm of Construction</h2>
+
+            <div class="highlight-box">
+                <p><strong>Takt</strong> (from the German word for "beat" or "rhythm") is a lean construction scheduling method that divides a project into zones and assigns each trade a fixed amount of time—called the "Takt time"—to complete their work in each zone before moving to the next.</p>
+            </div>
+
+            <p>Think of it like an assembly line in a car factory. Each station has a specific amount of time to complete its task before the product moves to the next station. In construction, instead of cars moving down a line, trades move through zones of a building in a choreographed sequence.</p>
+
+            <h2>How Takt Planning Works</h2>
+
+            <h3>1. Divide the Building into Zones</h3>
+            <p>First, you break down your project into logical, similarly-sized work areas. These could be floors, wings, apartment units, or any repeatable section. The key is that each zone should have roughly equivalent scope.</p>
+
+            <h3>2. Identify the Work Sequence</h3>
+            <p>Map out which trades need to work in what order. For example, in a typical floor build-out:</p>
+            <ol>
+                <li>Rough-in electrical and plumbing</li>
+                <li>Framing</li>
+                <li>Mechanical rough-in</li>
+                <li>Drywall installation</li>
+                <li>Painting</li>
+                <li>Finish work</li>
+            </ol>
+
+            <h3>3. Determine the Takt Time</h3>
+            <p>This is the heartbeat of your project—the fixed time interval that each trade has to complete their work in one zone. If your Takt time is 3 days, then every trade gets exactly 3 days to finish their work in each zone before moving to the next.</p>
+
+            <div class="highlight-box">
+                <p><strong>Example:</strong> If you have 10 zones (floors) and a Takt time of 3 days, you can predict with confidence that each trade will complete the entire building in 30 days (10 zones × 3 days).</p>
+            </div>
+
+            <h3>4. Create the Takt Plan</h3>
+            <p>Visualize this as a matrix or "Takt train" where each row is a zone and each column is a time period. Each trade follows a diagonal path through the building, maintaining consistent rhythm and avoiding conflicts.</p>
+
+            <h2>Why Takt Scheduling Works</h2>
+
+            <p><strong>Predictability:</strong> When everyone follows the same beat, schedules become reliable. No more guessing when trades will show up or how long they'll stay.</p>
+
+            <p><strong>Continuous Flow:</strong> Trades move smoothly from zone to zone without idle time or overcrowding. This eliminates the stop-start inefficiency of traditional scheduling.</p>
+
+            <p><strong>Better Resource Management:</strong> Contractors can optimize crew sizes and equipment needs because they know exactly where they'll be working and for how long.</p>
+
+            <p><strong>Quality Control:</strong> With a predictable schedule, you can implement consistent quality checkpoints and reduce rework.</p>
+
+            <p><strong>Easier Progress Tracking:</strong> Instead of trying to calculate percent complete on complex activities, you simply count zones completed. If you've finished 7 out of 10 zones, you're 70% done. Simple.</p>
+
+            <h2>The Data Advantage</h2>
+
+            <p>Here's where it gets interesting for someone like me who lives at the intersection of construction and data analytics: Takt scheduling generates incredibly clean, actionable data.</p>
+
+            <p>Because work is standardized by zone and time, you can:</p>
+            <ul>
+                <li>Track actual vs. planned productivity with precision</li>
+                <li>Identify bottlenecks immediately when a trade can't maintain the Takt</li>
+                <li>Predict project completion dates with higher confidence</li>
+                <li>Use historical Takt data to improve estimating on future projects</li>
+            </ul>
+
+            <p>This structured data makes it possible to build predictive models and continuously improve scheduling accuracy—something that's nearly impossible with the chaotic data from traditional scheduling methods.</p>
+
+            <h2>Common Misconceptions</h2>
+
+            <div class="quote">
+                "Takt is too rigid. Construction is too unpredictable for this to work."
+            </div>
+
+            <p>Actually, Takt creates flexibility through structure. When everyone knows the plan and rhythm, it's easier to adapt when issues arise. You can adjust the Takt time or resequence trades without the entire schedule falling apart.</p>
+
+            <div class="quote">
+                "This only works for repetitive projects like high-rises."
+            </div>
+
+            <p>While Takt shines in repetitive work, it's being successfully applied to hospitals, data centers, tenant improvements, and even infrastructure projects. Any project with repeatable elements can benefit from Takt thinking.</p>
+
+            <h2>Getting Started with Takt</h2>
+
+            <p>If you're interested in implementing Takt on your projects, start small:</p>
+
+            <ol>
+                <li><strong>Pilot on one floor or section:</strong> Don't try to Takt your entire project immediately. Test it on a repeatable section first.</li>
+                <li><strong>Involve your trades early:</strong> Get subcontractors involved in planning the Takt. They know their work best and can help set realistic Takt times.</li>
+                <li><strong>Use visual management:</strong> Create visual boards that show the Takt plan so everyone on site can see where they should be working.</li>
+                <li><strong>Track and adjust:</strong> Monitor how well trades maintain the Takt and adjust as needed. This is a learning process.</li>
+                <li><strong>Leverage software:</strong> Tools like ALICE, Avvir, or even Excel can help you plan and track Takt schedules.</li>
+            </ol>
+
+            <div class="conclusion">
+                <h2>The Bottom Line</h2>
+                <p>Takt scheduling isn't just another construction buzzword—it's a fundamental shift in how we think about construction flow and predictability. In an industry that's struggled with productivity for decades, Takt offers a proven path forward.</p>
+
+                <p>For those of us working at the intersection of construction and data, Takt is particularly exciting because it generates the kind of structured, reliable data we need to drive real improvements. It transforms construction from an art into a science—without losing the craft that makes building great.</p>
+
+                <p>The question isn't whether Takt can work in construction. It's whether construction can afford not to embrace it.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
