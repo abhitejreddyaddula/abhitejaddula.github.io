@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abhitej Reddy Addula - Resume</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            padding: 60px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .header .tagline {
+            font-size: 1.2em;
+            color: #888;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #333;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            color: #0f0;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #333;
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 50px;
+            width: 45%;
+        }
+
+        .timeline-item:nth-child(odd) {
+            margin-left: 0;
+            text-align: right;
+            padding-right: 40px;
+        }
+
+        .timeline-item:nth-child(even) {
+            margin-left: 55%;
+            text-align: left;
+            padding-left: 40px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background: #0f0;
+            border: 3px solid #000;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-dot {
+            right: -10px;
+        }
+
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: -10px;
+        }
+
+        .year {
+            color: #0f0;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .role {
+            font-size: 1.3em;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .company {
+            color: #888;
+            margin-bottom: 15px;
+        }
+
+        .achievement {
+            color: #ccc;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .achievement::before {
+            content: '▸ ';
+            color: #0f0;
+        }
+
+        .skills-section {
+            margin-top: 80px;
+            text-align: center;
+        }
+
+        .skills-section h2 {
+            font-size: 2em;
+            margin-bottom: 40px;
+            color: #0f0;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            text-align: left;
+        }
+
+        .skill-category {
+            border: 1px solid #333;
+            padding: 25px;
+        }
+
+        .skill-category h3 {
+            color: #0f0;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .skill-list {
+            color: #ccc;
+            line-height: 1.8;
+        }
+
+        .education-section {
+            margin-top: 80px;
+            text-align: center;
+        }
+
+        .education-section h2 {
+            font-size: 2em;
+            margin-bottom: 40px;
+            color: #0f0;
+        }
+
+        .education-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .education-box {
+            border: 1px solid #333;
+            padding: 25px;
+            text-align: left;
+        }
+
+        .degree {
+            font-size: 1.2em;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .school {
+            color: #0f0;
+            margin-bottom: 5px;
+        }
+
+        .grad-year {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item {
+                width: 100% !important;
+                margin-left: 0 !important;
+                padding-left: 60px !important;
+                padding-right: 0 !important;
+                text-align: left !important;
+            }
+
+            .timeline-dot {
+                left: 10px !important;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .stats {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ABHITEJ REDDY ADDULA</h1>
+            <p class="tagline">Project Controls + Data Analytics</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-number">9+</div>
+                <div class="stat-label">Years Experience</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">$1.2M</div>
+                <div class="stat-label">Largest Claim Won</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">4000+</div>
+                <div class="stat-label">Largest Schedule</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Certifications</div>
+            </div>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="year">2023</div>
+                <div class="role">Data Science Graduate</div>
+                <div class="company">University of Texas at Austin</div>
+                <div class="achievement">Postgraduate in Data Science & Business Analytics</div>
+                <div class="achievement">Bridging construction and analytics</div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="year">2022 - Present</div>
+                <div class="role">Cost Manager</div>
+                <div class="company">CHA Consulting, Brooklyn NY</div>
+                <div class="achievement">Managing major infrastructure projects for GDOT, MBTA, NJDOT</div>
+                <div class="achievement">Cost estimation & value engineering at all design phases</div>
+                <div class="achievement">Change order negotiation & claims resolution</div>
+                <div class="achievement">Schedule management with Primavera P6</div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="year">2017 - 2022</div>
+                <div class="role">Estimator / Project Manager</div>
+                <div class="company">Commodore Construction, Mt. Vernon NY</div>
+                <div class="achievement">Won $1.2M claim through data-driven documentation</div>
+                <div class="achievement">Estimated concrete, masonry, civil & drywall packages</div>
+                <div class="achievement">Managed multiple projects simultaneously</div>
+                <div class="achievement">Trained junior engineers on cost management systems</div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="year">2017</div>
+                <div class="role">MS Construction Management</div>
+                <div class="company">University of Texas at Arlington</div>
+                <div class="achievement">Advanced project management methodologies</div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="year">2014 - 2015</div>
+                <div class="role">Field Engineer</div>
+                <div class="company">Empire Infracon, Hyderabad India</div>
+                <div class="achievement">Created & managed 4000+ activity schedule</div>
+                <div class="achievement">Cost & schedule management</div>
+                <div class="achievement">Quality control & supplier audits</div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="year">2014</div>
+                <div class="role">BE Civil Engineering</div>
+                <div class="company">Osmania University, India</div>
+                <div class="achievement">Foundation in construction & infrastructure</div>
+            </div>
+        </div>
+
+        <div class="skills-section">
+            <h2>TECHNICAL ARSENAL</h2>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h3>Project Controls</h3>
+                    <div class="skill-list">
+                        Primavera P6<br>
+                        Bluebeam<br>
+                        On-Screen Takeoff<br>
+                        Procore<br>
+                        Vista by Viewpoint<br>
+                        BIM 360
+                    </div>
+                </div>
+                <div class="skill-category">
+                    <h3>Data Analytics</h3>
+                    <div class="skill-list">
+                        Python<br>
+                        R<br>
+                        SQL<br>
+                        Statistical Analysis<br>
+                        Predictive Modeling<br>
+                        Cost Forecasting
+                    </div>
+                </div>
+                <div class="skill-category">
+                    <h3>Core Expertise</h3>
+                    <div class="skill-list">
+                        Cost Estimation<br>
+                        Scheduling<br>
+                        Value Engineering<br>
+                        Claims Management<br>
+                        Change Orders<br>
+                        Risk Analysis
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="education-section">
+            <h2>CERTIFICATIONS</h2>
+            <div class="education-grid">
+                <div class="education-box">
+                    <div class="degree">PMP</div>
+                    <div class="school">Project Management Professional</div>
+                </div>
+                <div class="education-box">
+                    <div class="degree">CEP</div>
+                    <div class="school">Certified Estimating Professional</div>
+                </div>
+                <div class="education-box">
+                    <div class="degree">CMIT</div>
+                    <div class="school">Construction Management</div>
+                </div>
+                <div class="education-box">
+                    <div class="degree">LEED GA</div>
+                    <div class="school">Green Associate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
