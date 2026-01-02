@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abhitej Reddy Addula - Resume</title>
+    <title>Abhitej Reddy Addula</title>
     <style>
         * {
             margin: 0;
@@ -12,430 +12,80 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
             padding: 40px;
-            border-radius: 20px;
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .name {
+            font-size: 2em;
+            letter-spacing: 2px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            text-align: center;
         }
 
-        h1 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+        .menu {
+            list-style: none;
         }
 
-        .tagline {
-            color: #666;
+        .menu li {
+            margin-bottom: 15px;
             font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-
-        .nav-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1em;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .tab-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .tab-btn.active {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.5);
-        }
-
-        .content-section {
-            display: none;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 0.5s ease;
-        }
-
-        .content-section.active {
+        .menu a {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
             display: block;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        h2 {
-            color: #667eea;
-            margin-bottom: 25px;
-            font-size: 2em;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-        }
-
-        h3 {
-            color: #764ba2;
-            margin-top: 25px;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-
-        .about-text {
-            font-size: 1.1em;
-            color: #555;
-            margin-bottom: 20px;
-            line-height: 1.8;
-        }
-
-        .experience-item {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            border-left: 4px solid #667eea;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .experience-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
-        }
-
-        .job-title {
-            font-weight: bold;
-            color: #667eea;
-            font-size: 1.3em;
-            margin-bottom: 5px;
-        }
-
-        .company {
-            color: #764ba2;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .duration {
+        .menu li:hover {
             color: #888;
-            font-style: italic;
-            margin-bottom: 15px;
+            transform: translateX(10px);
         }
 
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+        .menu a:hover {
+            color: #888;
         }
 
-        .skill-category {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-            padding: 20px;
-            border-radius: 15px;
-            border-top: 3px solid #667eea;
-        }
-
-        .skill-category h4 {
-            color: #764ba2;
-            margin-bottom: 15px;
-        }
-
-        .skill-tag {
-            display: inline-block;
-            background: white;
-            padding: 8px 15px;
-            margin: 5px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .cert-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 10px 20px;
-            margin: 8px;
-            border-radius: 25px;
-            font-weight: 600;
-            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
-        }
-
-        ul {
-            margin-left: 20px;
-            margin-top: 10px;
-        }
-
-        li {
-            margin-bottom: 10px;
-            color: #555;
+        .menu li::before {
+            content: '* ';
+            color: #666;
         }
 
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
+            body {
+                padding: 20px;
             }
 
-            .nav-tabs {
-                flex-direction: column;
+            .name {
+                font-size: 1.5em;
             }
 
-            .tab-btn {
-                width: 100%;
-            }
-
-            header, .content-section {
-                padding: 25px;
+            .menu li {
+                font-size: 1em;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Abhitej Reddy Addula</h1>
-            <p class="tagline">Cost Manager | Construction Professional | Data Analytics Enthusiast</p>
-            
-            <div class="nav-tabs">
-                <button class="tab-btn active" onclick="showTab('personal')">Personal</button>
-                <button class="tab-btn" onclick="showTab('construction')">Construction</button>
-                <button class="tab-btn" onclick="showTab('tech')">Tech & Data</button>
-            </div>
-        </header>
-
-        <div id="personal" class="content-section active">
-            <h2>About Me</h2>
-            <p class="about-text">
-                Cost Manager with 9+ years of experience in estimating, cost controls, planning, and field operations. My expertise spans across estimating, scheduling, budgeting, value engineering, and financial analysis including review of cash flow statements, claims resolutions, and change order negotiations.
-            </p>
-            
-            <h3>Education</h3>
-            <div class="experience-item">
-                <div class="job-title">Postgraduate in Data Science and Business Analytics</div>
-                <div class="company">University of Texas at Austin</div>
-                <div class="duration">Graduated: August 2023</div>
-            </div>
-
-            <div class="experience-item">
-                <div class="job-title">Master of Science (MS) in Construction Management</div>
-                <div class="company">University of Texas at Arlington</div>
-                <div class="duration">Graduated: August 2017</div>
-            </div>
-
-            <div class="experience-item">
-                <div class="job-title">Bachelor of Engineering (BE) in Civil Engineering</div>
-                <div class="company">Osmania University, India</div>
-                <div class="duration">Graduated: June 2014</div>
-            </div>
-
-            <h3>Professional Certifications</h3>
-            <div style="margin-top: 20px;">
-                <span class="cert-badge">PMP - Project Management Professional</span>
-                <span class="cert-badge">CEP - Certified Estimating Professional</span>
-                <span class="cert-badge">CMIT</span>
-                <span class="cert-badge">LEED GA</span>
-            </div>
-
-            <h3>Core Competencies</h3>
-            <ul>
-                <li>Advanced cost estimation and budget management</li>
-                <li>Schedule creation and project planning (Primavera P6)</li>
-                <li>Value engineering and cost optimization</li>
-                <li>Change order negotiation and claims resolution</li>
-                <li>Owner representation and project management</li>
-                <li>Data-driven decision making and analytics</li>
-            </ul>
-        </div>
-
-        <div id="construction" class="content-section">
-            <h2>Construction Experience</h2>
-            
-            <div class="experience-item">
-                <div class="job-title">Cost Manager</div>
-                <div class="company">CHA Consulting, Brooklyn, NY</div>
-                <div class="duration">April 2022 - Present</div>
-                <ul>
-                    <li>Assisted owner/design teams with detailed cost estimates, issued budgets at all design phases including conceptual budgets</li>
-                    <li>Provided value engineering options to design teams during various design phases</li>
-                    <li>Acted as owner's representative reviewing and negotiating change orders, productivity, and schedule delay claims</li>
-                    <li>Reviewed bids from multiple contractors, compared to internal estimates, and drafted reports including detailed breakdown of work and costs</li>
-                    <li>Reviewed change orders and verified labor rates and contractual information as part of owner project management group</li>
-                    <li>Created baseline schedules and performed monthly updates for projects across transportation, buildings, and infrastructure sectors</li>
-                    <li>Managed projects for major clients including GDOT, MBTA, NJDOT and other private clients</li>
-                    <li>Conducted schedule meetings biweekly and issued reports to internal teams, owners, and stakeholders</li>
-                </ul>
-            </div>
-
-            <div class="experience-item">
-                <div class="job-title">Estimator / Project Manager</div>
-                <div class="company">Commodore Construction Corp., Mt. Vernon, NY</div>
-                <div class="duration">August 2017 - April 2022</div>
-                <ul>
-                    <li>Reviewed drawings and specifications, performed quantity takeoffs using On-Screen Takeoff (OST), Bluebeam, and PlanSwift</li>
-                    <li>Estimated wide scale of projects including large concrete and masonry projects, civil/site work packages, drywall, and SOFP packages</li>
-                    <li>Worked with multiple sub-contractors, issued RFPs, wrote scope of works, evaluated quotes, and negotiated buyout process</li>
-                    <li>Oversaw multiple projects simultaneously ensuring completion within budget and schedule</li>
-                    <li>Managed RFI's, change orders, submittals, production tracking and billing alongside Superintendent</li>
-                    <li>Created preliminary and bi-weekly schedules using Gantt charts, participated in pull plan meetings</li>
-                    <li><strong>Handled large change orders and claims, successfully negotiated and won a $1.2 million claim on a major masonry project</strong></li>
-                    <li>Participated in pre/post-bid meetings, attended site walk-throughs, leveling and closeout meetings</li>
-                    <li>Acted as QA/QC manager handling checklists, NCRs, documenting field changes for as-builts and resolving punch lists</li>
-                    <li>Trained incoming junior project engineers on managing RFIs, submittals, change orders, and Vista by Viewpoint software</li>
-                </ul>
-            </div>
-
-            <div class="experience-item">
-                <div class="job-title">Field Engineer</div>
-                <div class="company">Empire Infracon Pvt. Ltd, Hyderabad, India</div>
-                <div class="duration">July 2014 - December 2015</div>
-                <ul>
-                    <li>Assisted Project Manager with cost and schedule management, documenting field reports and bid packaging</li>
-                    <li>Created a project master schedule using Primavera P6 with over 4000+ activities and managed it through closeout</li>
-                    <li>Reviewed concrete break reports and conducted internal audits on supplier invoices per regulations</li>
-                </ul>
-            </div>
-
-            <h3>Estimating Trade Experience</h3>
-            <div class="skills-grid">
-                <div class="skill-category">
-                    <span class="skill-tag">Concrete</span>
-                    <span class="skill-tag">Masonry</span>
-                    <span class="skill-tag">Structural Steel</span>
-                    <span class="skill-tag">Drywall</span>
-                    <span class="skill-tag">Sitework</span>
-                </div>
-            </div>
-        </div>
-
-        <div id="tech" class="content-section">
-            <h2>Technology & Data Analytics</h2>
-            <p class="about-text">
-                Combining construction expertise with advanced data science skills to drive innovation in the built environment. Completed postgraduate studies in Data Science and Business Analytics at UT Austin, bringing modern analytical approaches to traditional construction challenges.
-            </p>
-
-            <h3>Software & Technical Skills</h3>
-            <div class="skills-grid">
-                <div class="skill-category">
-                    <h4>Estimating & Takeoff</h4>
-                    <span class="skill-tag">On-Screen Takeoff</span>
-                    <span class="skill-tag">Bluebeam</span>
-                    <span class="skill-tag">PlanSwift</span>
-                    <span class="skill-tag">Autodesk Takeoff</span>
-                </div>
-                <div class="skill-category">
-                    <h4>Scheduling & Planning</h4>
-                    <span class="skill-tag">Primavera P6</span>
-                    <span class="skill-tag">MS Project</span>
-                </div>
-                <div class="skill-category">
-                    <h4>BIM & Design</h4>
-                    <span class="skill-tag">Autodesk Revit</span>
-                    <span class="skill-tag">Navisworks</span>
-                    <span class="skill-tag">BIM 360 Glue</span>
-                </div>
-                <div class="skill-category">
-                    <h4>Project Management</h4>
-                    <span class="skill-tag">Procore</span>
-                    <span class="skill-tag">PlanGrid</span>
-                    <span class="skill-tag">Trimble Prolog</span>
-                    <span class="skill-tag">Vista by Viewpoint</span>
-                    <span class="skill-tag">Fieldwire</span>
-                    <span class="skill-tag">MS Office Suite</span>
-                </div>
-                <div class="skill-category">
-                    <h4>Data Analytics</h4>
-                    <span class="skill-tag">Python</span>
-                    <span class="skill-tag">R</span>
-                    <span class="skill-tag">SQL</span>
-                    <span class="skill-tag">Excel Analytics</span>
-                    <span class="skill-tag">Statistical Analysis</span>
-                </div>
-            </div>
-
-            <h3>Data-Driven Construction Management</h3>
-            <div class="experience-item">
-                <div class="job-title">Cost Analytics & Forecasting</div>
-                <ul>
-                    <li>Applied data science techniques to improve cost estimation accuracy</li>
-                    <li>Developed predictive models for budget forecasting and risk assessment</li>
-                    <li>Analyzed historical project data to identify cost-saving opportunities</li>
-                    <li>Created data visualizations for stakeholder reporting and decision-making</li>
-                </ul>
-            </div>
-
-            <div class="experience-item">
-                <div class="job-title">Schedule Optimization</div>
-                <ul>
-                    <li>Utilized advanced analytics to identify critical path bottlenecks</li>
-                    <li>Analyzed productivity data to optimize resource allocation</li>
-                    <li>Developed automated reporting systems for real-time project monitoring</li>
-                    <li>Implemented data-driven approaches to schedule delay analysis</li>
-                </ul>
-            </div>
-
-            <h3>Key Achievements</h3>
-            <ul>
-                <li>Successfully negotiated and won $1.2M claim using data-driven analysis and documentation</li>
-                <li>Managed schedules with 4000+ activities across multiple complex infrastructure projects</li>
-                <li>Integrated data analytics into traditional estimating processes, improving accuracy by leveraging historical project data</li>
-                <li>Trained multiple junior engineers on cost management software and best practices</li>
-                <li>Served major transportation clients (GDOT, MBTA, NJDOT) with comprehensive cost and schedule management</li>
-            </ul>
-        </div>
+    <div class="header">
+        <div class="name">ABHITEJ REDDY ADDULA</div>
+        <ul class="menu">
+            <li><a href="resume.html">Resume</a></li>
+            <li><a href="blog.html">Contech Blog</a></li>
+            <li><a href="projects.html">Projects</a></li>
+        </ul>
     </div>
 
     <script>
-        function showTab(tabName) {
-            const sections = document.querySelectorAll('.content-section');
-            const buttons = document.querySelectorAll('.tab-btn');
-            
-            sections.forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            buttons.forEach(button => {
-                button.classList.remove('active');
-            });
-            
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-        }
+        // Links now navigate to separate pages
     </script>
 </body>
 </html>
