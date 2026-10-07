@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food Scanner</title>
+<style>
+  :root {
+    --bg: #f5f6f4;
+    --card: #ffffff;
+    --ink: #1f2a24;
+    --muted: #6b766f;
+    --line: #e3e7e3;
+    --accent: #1e9e58;
+    --accent-ink: #ffffff;
+    --excellent: #1e9e58;
+    --good: #7ac142;
+    --poor: #f0932b;
+    --bad: #e5484d;
+    --risk0: #1e9e58;
+    --risk1: #e3b505;
+    --risk2: #f0932b;
+    --risk3: #e5484d;
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121614;
+      --card: #1c221f;
+      --ink: #e7ece9;
+      --muted: #9aa69f;
+      --line: #2c3430;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+    padding-bottom: 60px;
+  }
+  header {
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  header .inner {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  header h1 { font-size: 1.15em; flex: 1; }
+  header a { color: inherit; text-decoration: none; }
+  main { max-width: 640px; margin: 0 auto; padding: 16px; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .card h2 {
+    font-size: 1em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .muted { color: var(--muted); font-size: 0.88em; }
+
+  .btn {
+    border: none;
+    background: var(--accent);
+    color: var(--accent-ink);
+    padding: 11px 16px;
+    border-radius: 10px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn.secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn.small { padding: 6px 10px; font-size: 0.82em; font-weight: 500; }
+  .btn.big {
+    width: 100%;
+    padding: 18px;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .row-form { display: flex; gap: 8px; }
+  .row-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 1em;
+  }
+  select {
+    padding: 4px 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 0.85em;
+  }
+  .stack > * + * { margin-top: 10px; }
+
+  /* Product list rows (history, search, alternatives) */
+  .plist { list-style: none; }
+  .plist li + li { border-top: 1px solid var(--line); }
+  .plist a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    color: inherit;
+    text-decoration: none;
+  }
+  .plist img, .plist .noimg {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .plist .noimg { background: var(--line); }
+  .plist .txt { flex: 1; min-width: 0; }
+  .plist .name {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+    color: var(--muted);
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .pill {
+    font-weight: 700;
+    color: #fff;
+    border-radius: 999px;
+    padding: 2px 9px;
+    font-size: 0.85em;
+    flex-shrink: 0;
+  }
+
+  /* Product view */
+  .hero { display: flex; gap: 16px; align-items: center; }
+  .hero img {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .hero .txt { flex: 1; min-width: 0; }
+  .hero h2 { font-size: 1.2em; display: block; margin-bottom: 2px; }
+  .scorebox { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+  .ring {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .ring span {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--card);
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: 1.25em;
+  }
+  .scorebox .label { font-weight: 700; font-size: 1.15em; }
+  .breakdown { list-style: none; }
+  .breakdown li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 10px;
+    padding: 6px 0;
+  }
+  .bar {
+    grid-column: 1 / -1;
+    height: 6px;
+    background: var(--line);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .bar i { display: block; height: 100%; border-radius: 3px; }
+
+  .facts { list-style: none; }
+  .facts li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+  }
+  .facts li + li { border-top: 1px solid var(--line); }
+  .facts .txt { flex: 1; min-width: 0; }
+  .facts .val { font-weight: 600; white-space: nowrap; }
+  .facts .note { color: var(--muted); font-size: 0.82em; }
+
+  .notice {
+    padding: 14px;
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--muted);
+    font-size: 0.92em;
+  }
+  .spinner {
+    width: 22px;
+    height: 22px;
+    border: 3px solid var(--line);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Scanner overlay */
+  #scanner {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+  }
+  #scanner[hidden] { display: none; }
+  #scanner video { flex: 1; width: 100%; min-height: 0; object-fit: cover; }
+  #scanner .frame {
+    position: absolute;
+    left: 50%;
+    top: 45%;
+    width: min(80vw, 340px);
+    height: 160px;
+    transform: translate(-50%, -50%);
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    border-radius: 14px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+  }
+  #scanner .bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+    text-align: center;
+    color: #fff;
+  }
+  #scanner .bottom p { margin-bottom: 12px; }
+  #scanner .btn.secondary { color: #fff; border-color: rgba(255, 255, 255, 0.5); }
+
+  footer {
+    max-width: 640px;
+    margin: 10px auto 0;
+    padding: 0 16px;
+    color: var(--muted);
+    font-size: 0.8em;
+  }
+  footer a, .card a.link { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <h1><a href="#/">🥕 Food Scanner</a></h1>
+    <button class="btn small" id="headerScan">Scan</button>
+  </div>
+</header>
+
+<main>
+  <!-- Home -->
+  <section class="view" id="view-home">
+    <div class="card stack">
+      <button class="btn big" id="scanBtn">📷 Scan a barcode</button>
+      <form class="row-form" id="codeForm">
+        <input id="codeInput" inputmode="numeric" pattern="[0-9]*" placeholder="Or type a barcode, e.g. 3017624010701" autocomplete="off">
+        <button class="btn secondary" type="submit">Look up</button>
+      </form>
+      <form class="row-form" id="searchForm">
+        <input id="searchInput" type="search" placeholder="Search by product name" autocomplete="off">
+        <button class="btn secondary" type="submit">Search</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>History <button class="btn small secondary" id="clearHistory" hidden>Clear</button></h2>
+      <ul class="plist" id="historyList"></ul>
+      <p class="muted" id="historyEmpty">Products you scan will show up here.</p>
+    </div>
+
+    <div class="card">
+      <h2>How the score works</h2>
+      <p class="muted">Every product gets a score from 0 to 100:</p>
+      <ul class="facts">
+        <li><span class="dot" style="background:var(--excellent)"></span><div class="txt">Excellent</div><span class="val">75–100</span></li>
+        <li><span class="dot" style="background:var(--good)"></span><div class="txt">Good</div><span class="val">50–74</span></li>
+        <li><span class="dot" style="background:var(--poor)"></span><div class="txt">Poor</div><span class="val">25–49</span></li>
+        <li><span class="dot" style="background:var(--bad)"></span><div class="txt">Bad</div><span class="val">0–24</span></li>
+      </ul>
+      <p class="muted" style="margin-top:10px">
+        60% nutrition (based on the Nutri-Score method), 30% additives, 10% organic label.
+        A product containing a high-risk additive can't score above 49.
+      </p>
+    </div>
+  </section>
+
+  <!-- Search results -->
+  <section class="view" id="view-search">
+    <div class="card">
+      <h2 id="searchTitle">Results</h2>
+      <div id="searchBody"></div>
+    </div>
+  </section>
+
+  <!-- Product -->
+  <section class="view" id="view-product">
+    <div id="productBody"></div>
+  </section>
+</main>
+
+<footer>
+  Product data from <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a>
+  (Open Database License). Scores are a simplified estimate for comparing products, not medical or dietary advice.
+</footer>
+
+<!-- Camera overlay -->
+<div id="scanner" hidden>
+  <video id="scanVideo" playsinline muted autoplay></video>
+  <div class="frame"></div>
+  <div class="bottom">
+    <p id="scanMsg">Starting camera…</p>
+    <button class="btn secondary" id="scanClose">Cancel</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ============ Config ============ */
+
+const OFF = "https://world.openfoodfacts.org";
+const FIELDS = [
+  "code", "product_name", "product_name_en", "generic_name", "brands", "quantity",
+  "image_front_small_url", "image_front_url", "nutriments", "additives_tags",
+  "labels_tags", "categories_tags", "categories_hierarchy", "nutriscore_grade",
+].join(",");
+const ZXING_URL = "https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js";
+const ZXING_SRI = "sha384-BzBxP10ZE72aitqj5UMmUsbKFliP/DZqA8Wq+BNNhlIJDGoEd1tpkMYXOg9+n6sB";
+const LS_HISTORY = "fs_history_v1";
+const LS_COUNTRY = "fs_country_v1";
+const HISTORY_MAX = 50;
+
+const COUNTRIES = [
+  ["", "Any country"],
+  ["en:united-states", "United States"],
+  ["en:canada", "Canada"],
+  ["en:united-kingdom", "United Kingdom"],
+  ["en:india", "India"],
+  ["en:france", "France"],
+  ["en:germany", "Germany"],
+  ["en:spain", "Spain"],
+  ["en:italy", "Italy"],
+  ["en:australia", "Australia"],
+];
+
+/* ============ Additive risk levels ============
+   0 = risk-free, 1 = limited, 2 = moderate, 3 = high.
+   A simplified summary of EFSA re-evaluations, IARC classifications and
+   published studies. Additives not listed here are shown as "not rated". */
+
+const AZO = "Azo dye; EU products must warn it may affect activity and attention in children";
+const SULPHITE = "Sulphites can trigger asthma and allergic reactions";
+const NITRITE = "Forms nitrosamines; linked to colorectal cancer in processed meat";
+const PHOSPHATE = "High phosphate intake is linked to heart and kidney problems";
+const CARAMEL = "May contain 4-MEI, a possible carcinogen";
+const ALUMINIUM = "Contains aluminium, which can build up in the body";
+const MICROBIOTA = "Emulsifier that disrupted gut bacteria in studies";
+
+const ADDITIVES = {
+  E100: ["Curcumin", 0], E101: ["Riboflavin", 0],
+  E102: ["Tartrazine", 2, AZO], E104: ["Quinoline yellow", 2, AZO], E110: ["Sunset yellow FCF", 2, AZO],
+  E120: ["Carmine", 1, "Can cause allergic reactions"], E122: ["Azorubine", 2, AZO],
+  E123: ["Amaranth", 3, "Banned as a food colour in the US"], E124: ["Ponceau 4R", 2, AZO],
+  E127: ["Erythrosine", 2, "Thyroid effects at high intake"], E129: ["Allura red AC", 2, AZO],
+  E131: ["Patent blue V", 1], E132: ["Indigotine", 1], E133: ["Brilliant blue FCF", 1],
+  E140: ["Chlorophylls", 0], E141: ["Copper chlorophyllins", 0],
+  E150A: ["Plain caramel", 0], E150B: ["Caustic sulphite caramel", 1],
+  E150C: ["Ammonia caramel", 2, CARAMEL], E150D: ["Sulphite ammonia caramel", 2, CARAMEL],
+  E151: ["Brilliant black BN", 2, AZO], E153: ["Vegetable carbon", 1], E155: ["Brown HT", 2, AZO],
+  E160A: ["Carotenes", 0], E160B: ["Annatto", 1, "Can cause allergic reactions"], E160C: ["Paprika extract", 0],
+  E162: ["Beetroot red", 0], E163: ["Anthocyanins", 0], E170: ["Calcium carbonate", 0],
+  E171: ["Titanium dioxide", 3, "EFSA no longer considers it safe (2021); banned as a food additive in the EU"],
+  E172: ["Iron oxides", 0], E173: ["Aluminium", 2, ALUMINIUM],
+  E200: ["Sorbic acid", 1], E202: ["Potassium sorbate", 1],
+  E210: ["Benzoic acid", 2, "Can form benzene with vitamin C"], E211: ["Sodium benzoate", 2, "Can form benzene with vitamin C"],
+  E212: ["Potassium benzoate", 2], E213: ["Calcium benzoate", 2],
+  E220: ["Sulphur dioxide", 2, SULPHITE], E221: ["Sodium sulphite", 2, SULPHITE], E222: ["Sodium bisulphite", 2, SULPHITE],
+  E223: ["Sodium metabisulphite", 2, SULPHITE], E224: ["Potassium metabisulphite", 2, SULPHITE],
+  E226: ["Calcium sulphite", 2, SULPHITE], E227: ["Calcium bisulphite", 2, SULPHITE], E228: ["Potassium bisulphite", 2, SULPHITE],
+  E234: ["Nisin", 0], E235: ["Natamycin", 1],
+  E249: ["Potassium nitrite", 3, NITRITE], E250: ["Sodium nitrite", 3, NITRITE],
+  E251: ["Sodium nitrate", 3, NITRITE], E252: ["Potassium nitrate", 3, NITRITE],
+  E260: ["Acetic acid", 0], E262: ["Sodium acetates", 0], E270: ["Lactic acid", 0],
+  E280: ["Propionic acid", 1], E281: ["Sodium propionate", 1], E282: ["Calcium propionate", 1],
+  E290: ["Carbon dioxide", 0], E296: ["Malic acid", 0], E297: ["Fumaric acid", 0],
+  E300: ["Ascorbic acid (vitamin C)", 0], E301: ["Sodium ascorbate", 0], E302: ["Calcium ascorbate", 0],
+  E304: ["Ascorbyl palmitate", 0], E306: ["Tocopherols (vitamin E)", 0], E307: ["Alpha-tocopherol", 0],
+  E308: ["Gamma-tocopherol", 0], E309: ["Delta-tocopherol", 0],
+  E310: ["Propyl gallate", 2, "Suspected endocrine disruptor"],
+  E319: ["TBHQ", 2, "Immune effects seen in animal studies"],
+  E320: ["BHA", 3, "Possible human carcinogen (IARC 2B); suspected endocrine disruptor"],
+  E321: ["BHT", 2, "Suspected endocrine disruptor"],
+  E322: ["Lecithins", 0], E325: ["Sodium lactate", 0], E326: ["Potassium lactate", 0], E327: ["Calcium lactate", 0],
+  E330: ["Citric acid", 0], E331: ["Sodium citrates", 0], E332: ["Potassium citrates", 0], E333: ["Calcium citrates", 0],
+  E334: ["Tartaric acid", 0], E335: ["Sodium tartrates", 0], E336: ["Potassium tartrates", 0],
+  E338: ["Phosphoric acid", 2, PHOSPHATE], E339: ["Sodium phosphates", 1, PHOSPHATE],
+  E340: ["Potassium phosphates", 1, PHOSPHATE], E341: ["Calcium phosphates", 1, PHOSPHATE],
+  E385: ["Calcium disodium EDTA", 1], E392: ["Rosemary extract", 0],
+  E400: ["Alginic acid", 0], E401: ["Sodium alginate", 0], E406: ["Agar", 0],
+  E407: ["Carrageenan", 2, "Linked to gut inflammation in animal studies"],
+  E407A: ["Processed eucheuma seaweed", 2, "Linked to gut inflammation in animal studies"],
+  E410: ["Locust bean gum", 0], E412: ["Guar gum", 0], E414: ["Gum arabic", 0], E415: ["Xanthan gum", 0],
+  E417: ["Tara gum", 0], E418: ["Gellan gum", 0],
+  E420: ["Sorbitol", 1, "Laxative in large amounts"], E421: ["Mannitol", 1, "Laxative in large amounts"],
+  E422: ["Glycerol", 0], E425: ["Konjac", 1],
+  E432: ["Polysorbate 20", 1], E433: ["Polysorbate 80", 2, MICROBIOTA], E435: ["Polysorbate 60", 1], E436: ["Polysorbate 65", 1],
+  E440: ["Pectins", 0],
+  E450: ["Diphosphates", 2, PHOSPHATE], E451: ["Triphosphates", 2, PHOSPHATE], E452: ["Polyphosphates", 2, PHOSPHATE],
+  E460: ["Cellulose", 0], E461: ["Methyl cellulose", 1], E464: ["Hydroxypropyl methyl cellulose", 1],
+  E466: ["Carboxymethyl cellulose", 2, MICROBIOTA],
+  E471: ["Mono- and diglycerides of fatty acids", 1, "Associated with heart disease risk in an observational study"],
+  E472A: ["Acetic acid esters of mono- and diglycerides", 1], E472B: ["Lactic acid esters of mono- and diglycerides", 1],
+  E472C: ["Citric acid esters of mono- and diglycerides", 1], E472E: ["DATEM", 1],
+  E473: ["Sucrose esters of fatty acids", 1], E475: ["Polyglycerol esters of fatty acids", 1],
+  E476: ["Polyglycerol polyricinoleate (PGPR)", 1], E477: ["Propylene glycol esters of fatty acids", 1],
+  E481: ["Sodium stearoyl lactylate", 1], E482: ["Calcium stearoyl lactylate", 1], E491: ["Sorbitan monostearate", 1],
+  E500: ["Sodium carbonates", 0], E501: ["Potassium carbonates", 0], E503: ["Ammonium carbonates", 0],
+  E504: ["Magnesium carbonates", 0], E507: ["Hydrochloric acid", 0], E508: ["Potassium chloride", 0],
+  E509: ["Calcium chloride", 0], E511: ["Magnesium chloride", 0], E516: ["Calcium sulphate", 0], E524: ["Sodium hydroxide", 0],
+  E541: ["Sodium aluminium phosphate", 2, ALUMINIUM],
+  E551: ["Silicon dioxide", 1, "May contain nanoparticles"], E552: ["Calcium silicate", 1], E553B: ["Talc", 1],
+  E554: ["Sodium aluminium silicate", 2, ALUMINIUM], E556: ["Calcium aluminium silicate", 2, ALUMINIUM],
+  E559: ["Aluminium silicate", 2, ALUMINIUM],
+  E570: ["Fatty acids", 0], E575: ["Glucono delta-lactone", 0],
+  E621: ["Monosodium glutamate (MSG)", 1], E627: ["Disodium guanylate", 1], E631: ["Disodium inosinate", 1],
+  E635: ["Disodium ribonucleotides", 1],
+  E901: ["Beeswax", 0], E903: ["Carnauba wax", 0], E904: ["Shellac", 0], E920: ["L-cysteine", 0],
+  E941: ["Nitrogen", 0], E942: ["Nitrous oxide", 0], E948: ["Oxygen", 0],
+  E950: ["Acesulfame K", 2, "Artificial sweetener; long-term effects debated"],
+  E951: ["Aspartame", 2, "Possible human carcinogen (IARC 2B, 2023)"],
+  E952: ["Cyclamates", 2, "Banned in the US"], E954: ["Saccharin", 1],
+  E955: ["Sucralose", 2, "Artificial sweetener; long-term effects debated"],
+  E960: ["Steviol glycosides", 0], E961: ["Neotame", 1], E962: ["Aspartame-acesulfame salt", 2],
+  E965: ["Maltitol", 1, "Laxative in large amounts"], E966: ["Lactitol", 1], E967: ["Xylitol", 1, "Laxative in large amounts"],
+  E968: ["Erythritol", 1, "Associated with cardiovascular events in a 2023 study"],
+  E1103: ["Invertase", 0], E1404: ["Oxidised starch", 0], E1412: ["Distarch phosphate", 0],
+  E1414: ["Acetylated distarch phosphate", 0], E1420: ["Acetylated starch", 0],
+  E1422: ["Acetylated distarch adipate", 0], E1442: ["Hydroxypropyl distarch phosphate", 0],
+  E1450: ["Starch sodium octenyl succinate", 0], E1505: ["Triethyl citrate", 1], E1520: ["Propylene glycol", 1],
+};
+
+const RISK_LABELS = ["Risk-free", "Limited risk", "Moderate risk", "High risk"];
+
+/* ============ Scoring ============ */
+
+const NS = {
+  food: {
+    energy: [335, 670, 1005, 1340, 1675, 2010, 2345, 2680, 3015, 3350],
+    sugars: [4.5, 9, 13.5, 18, 22.5, 27, 31, 36, 40, 45],
+  },
+  beverage: {
+    energy: [0, 30, 60, 90, 120, 150, 180, 210, 240, 270],
+    sugars: [0, 1.5, 3, 4.5, 6, 7.5, 9, 10.5, 12, 13.5],
+  },
+  satFat: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  sodium: [90, 180, 270, 360, 450, 540, 630, 720, 810, 900],
+  fiber: [0.9, 1.9, 2.8, 3.7, 4.7],
+  protein: [1.6, 3.2, 4.8, 6.4, 8.0],
+};
+
+function num(x) {
+  const n = typeof x === "string" ? parseFloat(x) : x;
+  return Number.isFinite(n) ? n : null;
+}
+
+function firstNum(obj, keys) {
+  for (const k of keys) {
+    const v = num(obj[k]);
+    if (v != null) return v;
+  }
+  return null;
+}
+
+function points(value, thresholds) {
+  let p = 0;
+  for (const t of thresholds) if (value > t) p++;
+  return p;
+}
+
+function productKind(p) {
+  const c = p.categories_tags || [];
+  const has = (t) => c.includes(t);
+  const flavoured = has("en:flavoured-waters") || has("en:flavored-waters");
+  if ((has("en:waters") || has("en:mineral-waters") || has("en:spring-waters")) && !flavoured) return "water";
+  if (has("en:beverages") && !c.some((t) => /milk|dair/.test(t))) return "beverage";
+  if (has("en:cheeses")) return "cheese";
+  return "food";
+}
+
+function readNutrients(p) {
+  const n = p.nutriments || {};
+  let energy = firstNum(n, ["energy-kj_100g", "energy_100g"]);
+  const kcalRaw = num(n["energy-kcal_100g"]);
+  if (energy == null && kcalRaw != null) energy = kcalRaw * 4.184;
+  let sodium = num(n["sodium_100g"]);
+  if (sodium == null) {
+    const salt = num(n["salt_100g"]);
+    if (salt != null) sodium = salt / 2.5;
+  }
+  return {
+    energy,
+    kcal: kcalRaw ?? (energy != null ? energy / 4.184 : null),
+    sugars: num(n["sugars_100g"]),
+    satFat: num(n["saturated-fat_100g"]),
+    sodiumMg: sodium == null ? null : sodium * 1000,
+    fiber: num(n["fiber_100g"]),
+    protein: num(n["proteins_100g"]),
+    fv: firstNum(n, [
+      "fruits-vegetables-nuts_100g",
+      "fruits-vegetables-legumes_100g",
+      "fruits-vegetables-nuts-estimate_100g",
+      "fruits-vegetables-nuts-estimate-from-ingredients_100g",
+      "fruits-vegetables-legumes-estimate-from-ingredients_100g",
+    ]),
+  };
+}
+
+// Map a Nutri-Score value onto 0–100 (higher is better), linearly inside each grade band.
+function bandScore(s, bands) {
+  for (const [lo, hi, top, bottom, grade] of bands) {
+    if (s <= hi) {
+      const c = Math.max(lo, s);
+      const t = hi === lo ? 0 : (c - lo) / (hi - lo);
+      return { value: Math.round(top - t * (top - bottom)), grade };
+    }
+  }
+  const last = bands[bands.length - 1];
+  return { value: last[3], grade: last[4] };
+}
+
+const FOOD_BANDS = [
+  [-15, -1, 100, 80, "a"], [0, 2, 79, 60, "b"], [3, 10, 59, 40, "c"], [11, 18, 39, 20, "d"], [19, 40, 19, 0, "e"],
+];
+const BEVERAGE_BANDS = [
+  [-15, 1, 79, 60, "b"], [2, 5, 59, 40, "c"], [6, 9, 39, 20, "d"], [10, 40, 19, 0, "e"],
+];
+const GRADE_FALLBACK = { a: 90, b: 70, c: 50, d: 30, e: 10 };
+
+function nutritionScore(p) {
+  const kind = productKind(p);
+  const nu = readNutrients(p);
+  if (kind === "water") return { value: 100, grade: "a", kind, nu, details: null, source: "water" };
+
+  const complete = nu.energy != null && nu.sugars != null && nu.satFat != null && nu.sodiumMg != null;
+  if (!complete) {
+    const g = (p.nutriscore_grade || "").toLowerCase();
+    if (GRADE_FALLBACK[g] != null) return { value: GRADE_FALLBACK[g], grade: g, kind, nu, details: null, source: "off" };
+    return null;
+  }
+
+  const bev = kind === "beverage";
+  const t = bev ? NS.beverage : NS.food;
+  const fv = nu.fv ?? 0;
+  const d = {
+    energy: points(nu.energy, t.energy),
+    sugars: points(nu.sugars, t.sugars),
+    satFat: points(nu.satFat, NS.satFat),
+    sodium: points(nu.sodiumMg, NS.sodium),
+    fiber: points(nu.fiber ?? 0, NS.fiber),
+    protein: points(nu.protein ?? 0, NS.protein),
+    fv: bev ? (fv > 80 ? 10 : fv > 60 ? 4 : fv > 40 ? 2 : 0) : (fv > 80 ? 5 : fv > 60 ? 2 : fv > 40 ? 1 : 0),
+  };
+  const negative = d.energy + d.sugars + d.satFat + d.sodium;
+  const fvMax = bev ? 10 : 5;
+  const countProtein = negative < 11 || d.fv >= fvMax || kind === "cheese";
+  const ns = negative - d.fiber - d.fv - (countProtein ? d.protein : 0);
+  const mapped = bandScore(ns, bev ? BEVERAGE_BANDS : FOOD_BANDS);
+  return { value: mapped.value, grade: mapped.grade, kind, nu, details: d, ns, source: "computed" };
+}
+
+function additiveInfo(tag) {
+  const key = tag.replace(/^[a-z]{2}:/, "").toUpperCase();
+  const code = key.replace(/[A-Z]+$/, (m) => m.toLowerCase());
+  const entry = ADDITIVES[key] || ADDITIVES[key.replace(/[A-Z]+$/, "")];
+  if (!entry) return { code, name: code, risk: null, note: "" };
+  return { code, name: entry[0], risk: entry[1], note: entry[2] || "" };
+}
+
+// Open Food Facts lists both "e322" and "e322i"; keep only the more specific one.
+function additiveTags(p) {
+  const tags = [...new Set(p.additives_tags || [])];
+  return tags.filter((t) => !tags.some((o) => o !== t && o.startsWith(t) && /^[a-z]+$/.test(o.slice(t.length))));
+}
+
+function isOrganic(p) {
+  return (p.labels_tags || []).some((t) => /organic|agriculture-biologique|^[a-z]{2}:bio$/.test(t));
+}
+
+function scoreProduct(p) {
+  const nutrition = nutritionScore(p);
+  if (!nutrition) return null;
+  const additives = additiveTags(p).map(additiveInfo)
+    .sort((a, b) => (b.risk ?? -1) - (a.risk ?? -1));
+  const count = (r) => additives.filter((a) => a.risk === r).length;
+  const high = count(3);
+  const additiveScore = high ? 0 : Math.max(0, 100 - 30 * count(2) - 10 * count(1));
+  const organic = isOrganic(p);
+  const raw = Math.round(0.6 * nutrition.value + 0.3 * additiveScore + 0.1 * (organic ? 100 : 0));
+  const capped = high > 0 && raw > 49;
+  return { total: capped ? 49 : raw, nutrition, additives, additiveScore, organic, capped };
+}
+
+function rating(score) {
+  if (score >= 75) return { label: "Excellent", color: "var(--excellent)" };
+  if (score >= 50) return { label: "Good", color: "var(--good)" };
+  if (score >= 25) return { label: "Poor", color: "var(--poor)" };
+  return { label: "Bad", color: "var(--bad)" };
+}
+
+/* ============ Helpers ============ */
+
+const $ = (s) => document.querySelector(s);
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function safeImg(url) {
+  return typeof url === "string" && /^https:\/\//.test(url) ? url : "";
+}
+
+function productName(p) {
+  return p.product_name || p.product_name_en || p.generic_name || "Unnamed product";
+}
+
+function brandLine(p) {
+  return [p.brands && p.brands.split(",")[0].trim(), p.quantity].filter(Boolean).join(" · ");
+}
+
+function fmt(v, unit, digits = 1) {
+  if (v == null) return "—";
+  return `${Number(v.toFixed(digits))} ${unit}`;
+}
+
+function readLS(key, fallback) {
+  try {
+    const v = localStorage.getItem(key);
+    return v == null ? fallback : JSON.parse(v);
+  } catch { return fallback; }
+}
+
+function writeLS(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* storage unavailable */ }
+}
+
+function productRow(p, score) {
+  const img = safeImg(p.image_front_small_url || p.img);
+  const r = score != null ? rating(score) : null;
+  return `<li><a href="#/p/${esc(p.code)}">
+    ${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : `<span class="noimg"></span>`}
+    <div class="txt"><div class="name">${esc(p.name || productName(p))}</div>
+      <div class="muted">${esc(p.brand ?? brandLine(p))}</div></div>
+    ${r ? `<span class="pill" style="background:${r.color}">${score}</span>` : `<span class="muted">n/a</span>`}
+  </a></li>`;
+}
+
+/* ============ Open Food Facts API ============ */
+
+async function getJSON(url) {
+  const r = await fetch(url);
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(`Open Food Facts returned ${r.status}`);
+  return r.json();
+}
+
+async function fetchProduct(code) {
+  const j = await getJSON(`${OFF}/api/v2/product/${encodeURIComponent(code)}.json?fields=${FIELDS}`);
+  return j && j.status === 1 && j.product ? { ...j.product, code: j.product.code || code } : null;
+}
+
+async function searchByName(q) {
+  const url = `${OFF}/cgi/search.pl?search_simple=1&json=1&page_size=24&search_terms=${encodeURIComponent(q)}&fields=${FIELDS}`;
+  const j = await getJSON(url);
+  return (j && j.products) || [];
+}
+
+async function searchCategory(tag, country) {
+  const params = new URLSearchParams({
+    categories_tags: tag,
+    page_size: "60",
+    sort_by: "popularity_key",
+    fields: FIELDS,
+  });
+  if (country) params.set("countries_tags", country);
+  const j = await getJSON(`${OFF}/api/v2/search?${params}`);
+  return (j && j.products) || [];
+}
+
+/* ============ History ============ */
+
+function getHistory() { return readLS(LS_HISTORY, []); }
+
+function addHistory(p, score) {
+  const h = getHistory().filter((x) => x.code !== p.code);
+  h.unshift({
+    code: p.code,
+    name: productName(p),
+    brand: brandLine(p),
+    img: safeImg(p.image_front_small_url),
+    score,
+  });
+  writeLS(LS_HISTORY, h.slice(0, HISTORY_MAX));
+}
+
+function renderHistory() {
+  const h = getHistory();
+  $("#historyList").innerHTML = h.map((x) => productRow(x, x.score)).join("");
+  $("#historyEmpty").hidden = h.length > 0;
+  $("#clearHistory").hidden = h.length === 0;
+}
+
+/* ============ Views ============ */
+
+let renderToken = 0;
+
+function showView(name) {
+  document.querySelectorAll(".view").forEach((v) => v.classList.toggle("active", v.id === `view-${name}`));
+  window.scrollTo(0, 0);
+}
+
+function route() {
+  let hash = location.hash.replace(/^#\/?/, "");
+  try { hash = decodeURIComponent(hash); } catch { /* keep raw */ }
+  const token = ++renderToken;
+  if (hash.startsWith("p/")) return showProduct(hash.slice(2), token);
+  if (hash.startsWith("search/")) return showSearch(hash.slice(7), token);
+  renderHistory();
+  showView("home");
+}
+
+async function showSearch(q, token) {
+  showView("search");
+  $("#searchTitle").textContent = `Results for “${q}”`;
+  $("#searchBody").innerHTML = `<p class="muted"><span class="spinner"></span>Searching…</p>`;
+  try {
+    const products = await searchByName(q);
+    if (token !== renderToken) return;
+    if (!products.length) {
+      $("#searchBody").innerHTML = `<div class="notice">No products found. Try a different name or scan the barcode.</div>`;
+      return;
+    }
+    $("#searchBody").innerHTML = `<ul class="plist">${products.map((p) => {
+      const s = scoreProduct(p);
+      return productRow(p, s ? s.total : null);
+    }).join("")}</ul>`;
+  } catch (e) {
+    if (token !== renderToken) return;
+    $("#searchBody").innerHTML = `<div class="notice">Search failed: ${esc(e.message)}. Check your connection and try again.</div>`;
+  }
+}
+
+async function showProduct(code, token) {
+  showView("product");
+  const body = $("#productBody");
+  if (!/^\d{4,14}$/.test(code)) {
+    body.innerHTML = `<div class="card"><div class="notice">“${esc(code)}” isn't a valid barcode. Barcodes are 8 to 13 digits.</div></div>`;
+    return;
+  }
+  body.innerHTML = `<div class="card"><p class="muted"><span class="spinner"></span>Looking up ${esc(code)}…</p></div>`;
+  let p;
+  try {
+    p = await fetchProduct(code);
+  } catch (e) {
+    if (token !== renderToken) return;
+    body.innerHTML = `<div class="card"><div class="notice">Couldn't reach Open Food Facts: ${esc(e.message)}. Check your connection and try again.</div></div>`;
+    return;
+  }
+  if (token !== renderToken) return;
+  if (!p) {
+    body.innerHTML = `<div class="card stack">
+      <h2>Product not found</h2>
+      <p class="muted">Barcode ${esc(code)} isn't in Open Food Facts yet. You can add it there with photos of the
+      label and ingredients, and it will show up here once it has nutrition data.</p>
+      <a class="btn" href="${OFF}/product/${esc(code)}" target="_blank" rel="noopener">Add it on Open Food Facts</a>
+    </div>`;
+    return;
+  }
+
+  const s = scoreProduct(p);
+  addHistory(p, s ? s.total : null);
+  body.innerHTML = productHTML(p, s);
+  if (s) loadAlternatives(p, s, token);
+}
+
+function productHTML(p, s) {
+  const img = safeImg(p.image_front_url || p.image_front_small_url);
+  let scorePart;
+  if (s) {
+    const r = rating(s.total);
+    scorePart = `<div class="scorebox">
+      <div class="ring" style="background:conic-gradient(${r.color} ${s.total * 3.6}deg, var(--line) 0)"><span>${s.total}</span></div>
+      <div><div class="label" style="color:${r.color}">${r.label}</div><div class="muted">out of 100</div></div>
+    </div>`;
+  } else {
+    scorePart = `<div class="notice" style="margin-top:14px">Not enough nutrition data to score this product.
+      You can help by adding it on <a class="link" href="${OFF}/product/${esc(p.code)}" target="_blank" rel="noopener">Open Food Facts</a>.</div>`;
+  }
+
+  return `
+  <div class="card">
+    <div class="hero">
+      ${img ? `<img src="${esc(img)}" alt="">` : ""}
+      <div class="txt">
+        <h2>${esc(productName(p))}</h2>
+        <div class="muted">${esc(brandLine(p))}</div>
+        <div class="muted">Barcode ${esc(p.code)}</div>
+      </div>
+    </div>
+    ${scorePart}
+  </div>
+  ${s ? breakdownHTML(s) + factsHTML(s) + additivesHTML(s) : ""}
+  ${s ? `<div class="card" id="altCard">
+    <h2>Better alternatives <select id="countrySel" aria-label="Country">${COUNTRIES.map(([v, l]) =>
+      `<option value="${v}"${v === readLS(LS_COUNTRY, "") ? " selected" : ""}>${l}</option>`).join("")}</select></h2>
+    <div id="altBody"></div>
+  </div>` : ""}
+  <p class="muted" style="text-align:center">
+    <a class="link" href="${OFF}/product/${esc(p.code)}" target="_blank" rel="noopener">View or correct this product on Open Food Facts</a>
+  </p>`;
+}
+
+function breakdownHTML(s) {
+  const n = s.nutrition;
+  const nutNote = n.source === "off" ? " (from the Nutri-Score grade)" : n.source === "water" ? " (water)" : "";
+  const row = (label, weight, value, extra = "") => {
+    const r = rating(value);
+    return `<li><span>${label} <span class="muted">· ${weight}${extra}</span></span><b>${value}/100</b>
+      <div class="bar"><i style="width:${value}%;background:${r.color}"></i></div></li>`;
+  };
+  return `<div class="card">
+    <h2>Why this score</h2>
+    <ul class="breakdown">
+      ${row("Nutrition", "60%", n.value, nutNote)}
+      ${row("Additives", "30%", s.additiveScore)}
+      ${row("Organic", "10%", s.organic ? 100 : 0)}
+    </ul>
+    ${s.capped ? `<p class="muted" style="margin-top:8px">Capped at 49 because it contains a high-risk additive.</p>` : ""}
+  </div>`;
+}
+
+const LEVELS = [
+  { max: 2, label: "Low", color: "var(--risk0)" },
+  { max: 5, label: "Moderate", color: "var(--risk1)" },
+  { max: 7, label: "High", color: "var(--risk2)" },
+  { max: 10, label: "Very high", color: "var(--risk3)" },
+];
+
+function level(pts) { return LEVELS.find((l) => pts <= l.max); }
+
+function factsHTML(s) {
+  const { nu, details: d, kind } = s.nutrition;
+  if (!d) return "";
+  const per = kind === "beverage" ? "per 100 ml" : "per 100 g";
+  const neg = [
+    { name: "Calories", pts: d.energy, val: fmt(nu.kcal, "kcal", 0) },
+    { name: "Sugar", pts: d.sugars, val: fmt(nu.sugars, "g") },
+    { name: "Saturated fat", pts: d.satFat, val: fmt(nu.satFat, "g") },
+    { name: "Salt", pts: d.sodium, val: fmt(nu.sodiumMg * 2.5 / 1000, "g", 2) },
+  ];
+  const negatives = [];
+  const positives = [];
+  for (const x of neg) {
+    const l = level(x.pts);
+    const item = { name: x.name, note: x.pts <= 2 ? `Low ${x.name.toLowerCase()}` : `${l.label} amount`, val: x.val, color: l.color };
+    (x.pts <= 2 ? positives : negatives).push(item);
+  }
+  if (d.protein >= 3) positives.push({ name: "Protein", note: d.protein >= 5 ? "Excellent amount" : "Good amount", val: fmt(nu.protein, "g"), color: "var(--risk0)" });
+  if (d.fiber >= 3) positives.push({ name: "Fiber", note: d.fiber >= 5 ? "Excellent amount" : "Good amount", val: fmt(nu.fiber, "g"), color: "var(--risk0)" });
+  if (d.fv > 0) positives.push({ name: "Fruits, vegetables & nuts", note: "Good share", val: fmt(nu.fv, "%", 0), color: "var(--risk0)" });
+  if (s.organic) positives.push({ name: "Organic", note: "Certified organic label", val: "", color: "var(--risk0)" });
+
+  const list = (items) => `<ul class="facts">${items.map((x) => `<li>
+      <span class="dot" style="background:${x.color}"></span>
+      <div class="txt">${esc(x.name)}<div class="note">${esc(x.note)}</div></div>
+      <span class="val">${esc(x.val)}</span></li>`).join("")}</ul>`;
+
+  return `
+  ${negatives.length ? `<div class="card"><h2>Negatives <span class="muted">${per}</span></h2>${list(negatives)}</div>` : ""}
+  ${positives.length ? `<div class="card"><h2>Positives <span class="muted">${per}</span></h2>${list(positives)}</div>` : ""}`;
+}
+
+function additivesHTML(s) {
+  if (!s.additives.length) {
+    return `<div class="card"><h2>Additives</h2><p class="muted">No additives listed. 👍</p></div>`;
+  }
+  const colors = ["var(--risk0)", "var(--risk1)", "var(--risk2)", "var(--risk3)"];
+  return `<div class="card"><h2>Additives <span class="muted">${s.additives.length}</span></h2>
+    <ul class="facts">${s.additives.map((a) => `<li>
+      <span class="dot" style="background:${a.risk == null ? "var(--line)" : colors[a.risk]}"></span>
+      <div class="txt">${esc(a.code)}${a.name !== a.code ? ` · ${esc(a.name)}` : ""}
+        ${a.note ? `<div class="note">${esc(a.note)}</div>` : ""}</div>
+      <span class="val muted">${a.risk == null ? "Not rated" : RISK_LABELS[a.risk]}</span></li>`).join("")}
+    </ul></div>`;
+}
+
+async function loadAlternatives(p, s, token) {
+  const altBody = $("#altBody");
+  const country = readLS(LS_COUNTRY, "");
+  $("#countrySel").onchange = (e) => {
+    writeLS(LS_COUNTRY, e.target.value);
+    loadAlternatives(p, s, token);
+  };
+  const cats = p.categories_hierarchy?.length ? p.categories_hierarchy : (p.categories_tags || []);
+  if (!cats.length) {
+    altBody.innerHTML = `<p class="muted">This product has no category, so there's nothing to compare it with.</p>`;
+    return;
+  }
+  altBody.innerHTML = `<p class="muted"><span class="spinner"></span>Finding better products in the same category…</p>`;
+
+  // Try the most specific category first, then one level up if it's too narrow.
+  const tries = cats.slice(-2).reverse();
+  const found = new Map();
+  try {
+    for (const tag of tries) {
+      const products = await searchCategory(tag, country);
+      if (token !== renderToken || country !== readLS(LS_COUNTRY, "")) return;
+      for (const alt of products) {
+        if (!alt.code || alt.code === p.code || found.has(alt.code)) continue;
+        const as = scoreProduct(alt);
+        if (as && as.total > s.total && as.total >= 50) found.set(alt.code, { p: alt, score: as.total });
+      }
+      if (found.size >= 3) break;
+    }
+  } catch (e) {
+    if (token !== renderToken) return;
+    altBody.innerHTML = `<p class="muted">Couldn't load alternatives: ${esc(e.message)}.</p>`;
+    return;
+  }
+  const best = [...found.values()].sort((a, b) => b.score - a.score).slice(0, 6);
+  altBody.innerHTML = best.length
+    ? `<ul class="plist">${best.map((x) => productRow(x.p, x.score)).join("")}</ul>`
+    : `<p class="muted">${s.total >= 75 ? "This is already one of the best in its category." : "No better-scoring products found in this category."}</p>`;
+}
+
+/* ============ Camera scanning ============ */
+
+let scanId = 0;
+let scanStop = null;
+
+function setScanMsg(t) { $("#scanMsg").textContent = t; }
+
+function cameraError(e) {
+  if (!window.isSecureContext) return "The camera only works over HTTPS. Type the barcode instead.";
+  if (e && e.name === "NotAllowedError") return "Camera permission was denied. Allow camera access in your browser settings, or type the barcode instead.";
+  if (e && (e.name === "NotFoundError" || e.name === "OverconstrainedError")) return "No camera found on this device. Type the barcode instead.";
+  return `Couldn't start the camera${e && e.message ? `: ${e.message}` : ""}. Type the barcode instead.`;
+}
+
+function loadScript(src, integrity) {
+  return new Promise((resolve, reject) => {
+    if (window.ZXing) return resolve();
+    const el = document.createElement("script");
+    el.src = src;
+    el.integrity = integrity;
+    el.crossOrigin = "anonymous";
+    el.onload = resolve;
+    el.onerror = () => reject(new Error("couldn't load the barcode reader"));
+    document.head.appendChild(el);
+  });
+}
+
+async function openScanner() {
+  const id = ++scanId;
+  $("#scanner").hidden = false;
+  setScanMsg("Starting camera…");
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error("camera not supported in this browser");
+    if ("BarcodeDetector" in window) {
+      const supported = await BarcodeDetector.getSupportedFormats();
+      const formats = ["ean_13", "ean_8", "upc_a", "upc_e"].filter((f) => supported.includes(f));
+      if (formats.length) return await scanNative(id, formats);
+    }
+    await scanZxing(id);
+  } catch (e) {
+    if (id === scanId) setScanMsg(cameraError(e));
+  }
+}
+
+async function scanNative(id, formats) {
+  const video = $("#scanVideo");
+  const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
+  const stop = () => { stream.getTracks().forEach((t) => t.stop()); video.srcObject = null; };
+  if (id !== scanId) return stop();
+  let active = true;
+  scanStop = () => { active = false; stop(); };
+  video.srcObject = stream;
+  await video.play();
+  setScanMsg("Point the camera at a barcode");
+  const detector = new BarcodeDetector({ formats });
+  const tick = async () => {
+    if (!active) return;
+    try {
+      const codes = await detector.detect(video);
+      if (active && codes.length) return onDetected(codes[0].rawValue);
+    } catch { /* frame not ready yet */ }
+    setTimeout(tick, 150);
+  };
+  tick();
+}
+
+async function scanZxing(id) {
+  setScanMsg("Loading barcode reader…");
+  await loadScript(ZXING_URL, ZXING_SRI);
+  if (id !== scanId) return;
+  const Z = window.ZXing;
+  const hints = new Map();
+  hints.set(Z.DecodeHintType.POSSIBLE_FORMATS, [Z.BarcodeFormat.EAN_13, Z.BarcodeFormat.EAN_8, Z.BarcodeFormat.UPC_A, Z.BarcodeFormat.UPC_E]);
+  const reader = new Z.BrowserMultiFormatReader(hints);
+  scanStop = () => reader.reset();
+  setScanMsg("Starting camera…");
+  await reader.decodeFromConstraints(
+    { video: { facingMode: { ideal: "environment" } }, audio: false },
+    $("#scanVideo"),
+    (result) => { if (result && id === scanId) onDetected(result.getText()); },
+  );
+  if (id !== scanId) return reader.reset();
+  setScanMsg("Point the camera at a barcode");
+}
+
+function closeScanner() {
+  scanId++;
+  if (scanStop) scanStop();
+  scanStop = null;
+  $("#scanner").hidden = true;
+}
+
+function onDetected(code) {
+  closeScanner();
+  if (navigator.vibrate) navigator.vibrate(60);
+  location.hash = `#/p/${code}`;
+}
+
+/* ============ Wire up ============ */
+
+$("#scanBtn").onclick = openScanner;
+$("#headerScan").onclick = openScanner;
+$("#scanClose").onclick = closeScanner;
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#scanner").hidden) closeScanner(); });
+
+$("#codeForm").onsubmit = (e) => {
+  e.preventDefault();
+  const code = $("#codeInput").value.replace(/\D/g, "");
+  if (code) location.hash = `#/p/${code}`;
+};
+
+$("#searchForm").onsubmit = (e) => {
+  e.preventDefault();
+  const q = $("#searchInput").value.trim();
+  if (q) location.hash = `#/search/${encodeURIComponent(q)}`;
+};
+
+$("#clearHistory").onclick = () => {
+  if (!confirm("Clear your scan history?")) return;
+  writeLS(LS_HISTORY, []);
+  renderHistory();
+};
+
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>
