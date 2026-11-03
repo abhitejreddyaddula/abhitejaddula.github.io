@@ -1,91 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abhitej Reddy Addula</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abhitej Reddy Addula · Project Controls + Data Analytics</title>
+<meta name="description" content="Abhitej Reddy Addula is a construction cost manager in New York working across estimating, scheduling, project controls and data analytics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* Hero */
+  .hero { padding: 96px 0 72px; }
+  .hero h1 {
+    font-size: clamp(2.6em, 8vw, 4.4em);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+  }
+  .hero .lede {
+    font-size: clamp(1.1em, 2.4vw, 1.3em);
+    color: var(--body);
+    max-width: 58ch;
+    margin-top: 24px;
+  }
+  .hero .lede strong { color: var(--ink); font-weight: 600; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .hero-meta {
+    display: flex; flex-wrap: wrap; gap: 8px 24px;
+    margin-top: 28px; color: var(--muted); font-size: 0.92em; list-style: none;
+  }
+  .hero-meta li::before { content: '● '; color: var(--accent); font-size: 0.7em; vertical-align: 2px; }
 
-        body {
-            background: #000;
-            color: #fff;
-            font-family: 'Courier New', monospace;
-            padding: 40px;
-        }
+  /* Stats */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .stat { padding: 24px; background: var(--panel); }
+  .stat + .stat { border-left: 1px solid var(--line); }
+  .stat-number { font-family: var(--mono); font-size: 2em; font-weight: 500; color: var(--accent); line-height: 1.2; }
+  .stat-label { color: var(--muted); font-size: 0.9em; margin-top: 4px; }
 
-        .header {
-            margin-bottom: 40px;
-        }
+  /* Experience */
+  .timeline { max-width: 760px; }
+  .job { position: relative; padding: 0 0 36px 32px; border-left: 1px solid var(--line); }
+  .job:last-child { padding-bottom: 0; }
+  .job::before {
+    content: ''; position: absolute; left: -6px; top: 7px;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--faint);
+  }
+  .job.current::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+  .dates { font-family: var(--mono); font-size: 0.82em; color: var(--muted); }
+  .role { font-size: 1.25em; font-weight: 600; margin-top: 2px; }
+  .org { color: var(--muted); }
+  .badge {
+    display: inline-block; font-family: var(--mono); font-size: 0.65em;
+    color: var(--accent); background: var(--accent-soft);
+    border-radius: 4px; padding: 2px 7px; margin-left: 8px; vertical-align: 3px;
+  }
 
-        .name {
-            font-size: 2em;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
-        }
+  /* Skills */
+  .skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card { border: 1px solid var(--line); border-radius: 12px; padding: 24px; background: var(--panel); }
+  .card h3 { font-size: 1.05em; margin-bottom: 14px; }
+  .card .chips li { background: var(--bg); }
 
-        .menu {
-            list-style: none;
-        }
+  /* Credentials */
+  .creds { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .cred-list { list-style: none; }
+  .cred-list li { display: flex; gap: 16px; align-items: baseline; padding: 12px 0; }
+  .cred-list li + li { border-top: 1px solid var(--line); }
+  .code { font-family: var(--mono); font-weight: 500; color: var(--accent); min-width: 72px; }
+  .cred-name { color: var(--body); }
+  .cred-sub { color: var(--muted); font-size: 0.9em; }
+  .year { font-family: var(--mono); color: var(--faint); font-size: 0.85em; margin-left: auto; white-space: nowrap; }
 
-        .menu li {
-            margin-bottom: 15px;
-            font-size: 1.2em;
-            transition: all 0.3s ease;
-        }
+  /* Writing */
+  .posts { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+  .all-posts { display: inline-block; margin-top: 24px; color: var(--muted); font-size: 0.92em; }
+  .all-posts:hover { color: var(--ink); }
 
-        .menu a {
-            color: #fff;
-            text-decoration: none;
-            cursor: pointer;
-            display: block;
-        }
+  /* Contact */
+  .contact-box {
+    border: 1px solid var(--line); border-radius: 16px; padding: 48px;
+    background: linear-gradient(135deg, var(--accent-soft), transparent 60%), var(--panel);
+  }
+  .contact-box p { color: var(--body); max-width: 52ch; margin-bottom: 28px; font-size: 1.1em; }
 
-        .menu li:hover {
-            color: #888;
-            transform: translateX(10px);
-        }
-
-        .menu a:hover {
-            color: #888;
-        }
-
-        .menu li::before {
-            content: '* ';
-            color: #666;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 20px;
-            }
-
-            .name {
-                font-size: 1.5em;
-            }
-
-            .menu li {
-                font-size: 1em;
-            }
-        }
-    </style>
+  @media (max-width: 820px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stat:nth-child(3) { border-left: 0; }
+    .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
+    .skills, .creds { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .hero { padding: 56px 0 48px; }
+    .stat { padding: 18px; }
+    .stat-number { font-size: 1.6em; }
+    .contact-box { padding: 28px 20px; }
+  }
+</style>
 </head>
 <body>
-    <div class="header">
-        <div class="name">ABHITEJ REDDY ADDULA</div>
-        <ul class="menu">
-            <li><a href="resume.html">Resume</a></li>
-            <li><a href="blog.html">Contech Blog</a></li>
-            <li><a href="projects.html">Projects</a></li>
-        </ul>
-    </div>
 
-    <script>
-        // Links now navigate to separate pages
-    </script>
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html">abhitej<span>.</span>addula</a>
+    <ul class="nav-links">
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Project Controls + Data Analytics</div>
+    <h1>Abhitej Reddy Addula</h1>
+    <p class="lede">
+      Construction <strong>cost manager</strong> with 10+ years across estimating, scheduling,
+      and project controls. I pair claims, change-order, and Primavera P6 work with a
+      background in <strong>data science</strong>, using Python, R, and SQL to forecast cost
+      and keep projects predictable.
+    </p>
+    <div class="hero-actions">
+      <a class="btn primary" href="#contact">Get in touch</a>
+      <a class="btn" href="blog.html">Read the blog</a>
+    </div>
+    <ul class="hero-meta">
+      <li>Cost Manager at CHA Consulting</li>
+      <li>New York, NY</li>
+      <li>PMP · CEP · LEED GA</li>
+    </ul>
+  </div>
+</header>
+
+<div class="wrap" style="padding-bottom: 72px;">
+  <div class="stats">
+    <div class="stat"><div class="stat-number">10+</div><div class="stat-label">Years experience</div></div>
+    <div class="stat"><div class="stat-number">$1.2M</div><div class="stat-label">Largest claim won</div></div>
+    <div class="stat"><div class="stat-number">4,000+</div><div class="stat-label">Largest schedule</div></div>
+    <div class="stat"><div class="stat-number">4</div><div class="stat-label">Certifications</div></div>
+  </div>
+</div>
+
+<section class="section" id="experience">
+  <div class="wrap">
+    <div class="eyebrow">Experience</div>
+    <h2 class="section-title">From the field to the cost report</h2>
+    <div class="timeline">
+      <div class="job current">
+        <div class="dates">2022 – Present</div>
+        <div class="role">Cost Manager <span class="badge">Current</span></div>
+        <div class="org">CHA Consulting · Brooklyn, NY</div>
+      </div>
+      <div class="job">
+        <div class="dates">2017 – 2022</div>
+        <div class="role">Estimator / Project Manager</div>
+        <div class="org">Commodore Construction · Mt. Vernon, NY</div>
+      </div>
+      <div class="job">
+        <div class="dates">2014 – 2015</div>
+        <div class="role">Field Engineer</div>
+        <div class="org">Empire Infracon · Hyderabad, India</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="skills">
+  <div class="wrap">
+    <div class="eyebrow">Skills</div>
+    <h2 class="section-title">The toolkit</h2>
+    <div class="skills">
+      <div class="card">
+        <h3>Project Controls</h3>
+        <ul class="chips">
+          <li>Primavera P6</li><li>Bluebeam</li><li>On-Screen Takeoff</li>
+          <li>Procore</li><li>Vista by Viewpoint</li><li>BIM 360</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Data Analytics</h3>
+        <ul class="chips">
+          <li>Python</li><li>R</li><li>SQL</li><li>Statistical Analysis</li>
+          <li>Predictive Modeling</li><li>Cost Forecasting</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Core Expertise</h3>
+        <ul class="chips">
+          <li>Cost Estimation</li><li>Scheduling</li><li>Value Engineering</li>
+          <li>Claims Management</li><li>Change Orders</li><li>Risk Analysis</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="credentials">
+  <div class="wrap">
+    <div class="eyebrow">Credentials</div>
+    <h2 class="section-title">Education &amp; certifications</h2>
+    <div class="creds">
+      <div class="card">
+        <h3>Education</h3>
+        <ul class="cred-list">
+          <li><div><div class="cred-name">PG, Data Science &amp; Business Analytics</div><div class="cred-sub">University of Texas at Austin</div></div><span class="year">2023</span></li>
+          <li><div><div class="cred-name">MS, Construction Management</div><div class="cred-sub">University of Texas at Arlington</div></div><span class="year">2017</span></li>
+          <li><div><div class="cred-name">BE, Civil Engineering</div><div class="cred-sub">Osmania University, India</div></div><span class="year">2014</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Certifications</h3>
+        <ul class="cred-list">
+          <li><span class="code">PMP</span><span class="cred-name">Project Management Professional</span></li>
+          <li><span class="code">CEP</span><span class="cred-name">Certified Estimating Professional</span></li>
+          <li><span class="code">CMIT</span><span class="cred-name">Construction Management</span></li>
+          <li><span class="code">LEED GA</span><span class="cred-name">Green Associate</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="writing">
+  <div class="wrap">
+    <div class="eyebrow">Writing</div>
+    <h2 class="section-title">Contech blog</h2>
+    <div class="posts">
+      <a class="post" href="article-takt-scheduling.html">
+        <div class="post-meta">Jan 2, 2026 · 5 min read</div>
+        <div class="post-title">What is Takt Scheduling?</div>
+        <p class="post-desc">How lean, zone-based Takt planning brings predictable flow to
+          construction, and why its structured data is ideal for forecasting.</p>
+        <span class="post-more">Read article →</span>
+      </a>
+    </div>
+    <a class="all-posts" href="blog.html">All posts →</a>
+  </div>
+</section>
+
+<section class="section" id="contact">
+  <div class="wrap">
+    <div class="contact-box">
+      <div class="eyebrow">Contact</div>
+      <h2 class="section-title" style="margin-bottom: 16px;">Let's talk</h2>
+      <p>Open to conversations about cost management, project controls, and using data to
+        make construction more predictable.</p>
+      <div class="hero-actions" style="margin-top: 0;">
+        <a class="btn primary" href="mailto:abhitej.addula@gmail.com">abhitej.addula@gmail.com</a>
+        <!-- TODO: add LinkedIn and phone
+        <a class="btn" href="https://www.linkedin.com/in/XXXX" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" href="tel:+1XXXXXXXXXX">(XXX) XXX-XXXX</a>
+        -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <span>© 2026 Abhitej Reddy Addula</span>
+    <span>New York, NY</span>
+  </div>
+</footer>
+
 </body>
 </html>
