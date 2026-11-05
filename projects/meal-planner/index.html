@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toddler Meal Planner</title>
+<style>
+  :root {
+    --bg: #fdf9f3;
+    --card: #ffffff;
+    --ink: #3b3128;
+    --muted: #8a7d6f;
+    --accent: #e8734a;
+    --accent-soft: #fdeae2;
+    --green: #6da16d;
+    --green-soft: #e8f2e8;
+    --line: #eee3d6;
+    --radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+    padding-bottom: 80px;
+  }
+  header {
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  header h1 { font-size: 1.25em; }
+  header h1 span { margin-right: 8px; }
+  .tabs { display: flex; gap: 6px; }
+  .tabs button {
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--muted);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.95em;
+    cursor: pointer;
+  }
+  .tabs button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 600;
+  }
+  main { max-width: 1100px; margin: 0 auto; padding: 20px; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .toolbar h2 { font-size: 1.1em; }
+  .toolbar .hint { color: var(--muted); font-size: 0.85em; width: 100%; }
+  .btn {
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn.secondary {
+    background: var(--card);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    font-weight: 500;
+  }
+  .btn:active { transform: scale(0.98); }
+
+  /* Week grid */
+  .week {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+  }
+  .day {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .day.today { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .day-head {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .day-head .dow { font-weight: 700; }
+  .day-head .date { color: var(--muted); font-size: 0.8em; }
+  .slot { padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .slot:last-child { border-bottom: none; }
+  .slot-label {
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+  }
+  .slot-actions { display: flex; gap: 2px; }
+  .slot-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.05em;
+    padding: 2px 4px;
+    opacity: 0.45;
+  }
+  .slot-actions button:hover { opacity: 1; }
+  .slot-actions button.locked { opacity: 1; }
+  .slot-name { font-size: 0.92em; font-weight: 600; cursor: pointer; }
+  .slot-name:hover { color: var(--accent); }
+  .slot-name.empty { color: var(--muted); font-weight: 400; font-style: italic; }
+  .slot-tags { margin-top: 3px; display: flex; flex-wrap: wrap; gap: 3px; }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.66em;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--green-soft);
+    color: var(--green);
+    font-weight: 600;
+  }
+  .tag.protein { background: #fdeae2; color: #c05a2e; }
+  .tag.iron { background: #ece7f5; color: #6b5aa0; }
+  .tag.veggie { background: #e8f2e8; color: #4f8a4f; }
+  .tag.fruit { background: #fdf0e0; color: #c08a2e; }
+  .tag.grain { background: #f3ecdd; color: #927c4a; }
+  .tag.dairy { background: #e4f0f5; color: #3f7f9c; }
+
+  /* Recipe cards */
+  .filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .filters button {
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--muted);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.85em;
+    cursor: pointer;
+  }
+  .filters button.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .recipes { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .recipe-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px;
+    cursor: pointer;
+    transition: box-shadow 0.15s;
+  }
+  .recipe-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+  .recipe-card .cat {
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .recipe-card h3 { font-size: 1em; margin: 2px 0 4px; }
+  .recipe-card .meta { color: var(--muted); font-size: 0.8em; margin-bottom: 6px; }
+  .recipe-card .slot-tags { margin-top: 6px; }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(40,30,20,0.45);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 30px 16px;
+    z-index: 50;
+    overflow-y: auto;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--card);
+    border-radius: var(--radius);
+    max-width: 560px;
+    width: 100%;
+    padding: 22px;
+    position: relative;
+  }
+  .modal .close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 1.4em;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .modal h2 { margin-bottom: 2px; padding-right: 30px; }
+  .modal .meta { color: var(--muted); font-size: 0.85em; margin-bottom: 10px; }
+  .modal h4 { margin: 14px 0 4px; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .modal ul, .modal ol { padding-left: 20px; font-size: 0.95em; }
+  .modal li { margin-bottom: 3px; }
+  .modal .note {
+    background: var(--accent-soft);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 0.88em;
+    margin-top: 14px;
+  }
+  .modal .modal-actions { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+
+  /* Form */
+  .form-row { margin-bottom: 12px; }
+  .form-row label { display: block; font-size: 0.85em; font-weight: 600; margin-bottom: 4px; }
+  .form-row input[type=text], .form-row input[type=number], .form-row select, .form-row textarea {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-family: inherit;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .form-row textarea { min-height: 80px; resize: vertical; }
+  .checks { display: flex; flex-wrap: wrap; gap: 10px; }
+  .checks label { font-weight: 400; font-size: 0.9em; display: flex; align-items: center; gap: 4px; }
+
+  /* Shopping list */
+  .shop-group { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; }
+  .shop-group h3 { font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 8px; }
+  .shop-item { display: flex; align-items: baseline; gap: 8px; padding: 4px 0; font-size: 0.95em; }
+  .shop-item input { transform: translateY(1px); }
+  .shop-item.done span { text-decoration: line-through; color: var(--muted); }
+  .shop-item .uses { color: var(--muted); font-size: 0.8em; }
+  .empty-state { color: var(--muted); text-align: center; padding: 50px 20px; }
+
+  @media print {
+    header, .toolbar, .slot-actions, .tabs { display: none !important; }
+    body { background: #fff; padding: 0; }
+    .week { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .day { break-inside: avoid; }
+  }
+  @media (max-width: 600px) {
+    main { padding: 12px; }
+    .week { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 420px) {
+    .week { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span>🥕</span>Toddler Meal Planner</h1>
+  <nav class="tabs">
+    <button data-view="plan" class="active">This Week</button>
+    <button data-view="recipes">Recipes</button>
+    <button data-view="shopping">Shopping List</button>
+  </nav>
+</header>
+
+<main>
+  <!-- WEEK PLAN -->
+  <section id="view-plan" class="view active">
+    <div class="toolbar">
+      <h2 id="week-title">This Week</h2>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn secondary" onclick="window.print()">Print</button>
+        <button class="btn" id="btn-generate">Generate Week</button>
+      </div>
+      <div class="hint">Tap a meal name for the recipe. 🔁 swaps in a different dish, 🔒 keeps it when you regenerate.</div>
+    </div>
+    <div class="week" id="week-grid"></div>
+  </section>
+
+  <!-- RECIPES -->
+  <section id="view-recipes" class="view">
+    <div class="toolbar">
+      <h2>Recipe Library</h2>
+      <div style="display:flex; gap:8px;">
+        <button class="btn secondary" id="btn-restore">Restore starter recipes</button>
+        <button class="btn" id="btn-add-recipe">+ Add Recipe</button>
+      </div>
+    </div>
+    <div class="filters" id="cat-filters"></div>
+    <div class="recipes" id="recipe-grid"></div>
+  </section>
+
+  <!-- SHOPPING -->
+  <section id="view-shopping" class="view">
+    <div class="toolbar">
+      <h2>Shopping List</h2>
+      <button class="btn secondary" id="btn-clear-checks">Uncheck all</button>
+      <div class="hint">Built automatically from this week's plan, grouped by meal type. Checks are saved on this device.</div>
+    </div>
+    <div id="shop-list"></div>
+  </section>
+</main>
+
+<!-- Recipe detail modal -->
+<div class="modal-backdrop" id="detail-backdrop">
+  <div class="modal" id="detail-modal"></div>
+</div>
+
+<!-- Add/edit recipe modal -->
+<div class="modal-backdrop" id="form-backdrop">
+  <div class="modal">
+    <button class="close" onclick="closeForm()">&times;</button>
+    <h2 id="form-title">Add Recipe</h2>
+    <form id="recipe-form" style="margin-top:12px;">
+      <input type="hidden" id="f-id">
+      <div class="form-row">
+        <label for="f-name">Name</label>
+        <input type="text" id="f-name" required maxlength="80">
+      </div>
+      <div class="form-row" style="display:flex; gap:10px;">
+        <div style="flex:1;">
+          <label for="f-cat">Meal type</label>
+          <select id="f-cat">
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="snack">Snack</option>
+            <option value="dinner">Dinner</option>
+          </select>
+        </div>
+        <div style="width:110px;">
+          <label for="f-time">Minutes</label>
+          <input type="number" id="f-time" min="1" max="600" value="15">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Food groups</label>
+        <div class="checks" id="f-tags"></div>
+      </div>
+      <div class="form-row">
+        <label for="f-ingredients">Ingredients (one per line)</label>
+        <textarea id="f-ingredients" placeholder="1/2 cup rolled oats&#10;1 ripe banana"></textarea>
+      </div>
+      <div class="form-row">
+        <label for="f-steps">Steps (one per line)</label>
+        <textarea id="f-steps" placeholder="Mash the banana...&#10;Stir in the oats..."></textarea>
+      </div>
+      <div class="form-row">
+        <label for="f-note">Toddler tip (optional)</label>
+        <input type="text" id="f-note" maxlength="200" placeholder="e.g. Cut into strips for easy self-feeding">
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="btn">Save</button>
+        <button type="button" class="btn secondary" onclick="closeForm()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ============ Data ============ */
+
+const CATS = ["breakfast", "lunch", "snack", "dinner"];
+const CAT_LABELS = { breakfast: "Breakfast", lunch: "Lunch", snack: "Snack", dinner: "Dinner" };
+const TAGS = ["protein", "iron", "veggie", "fruit", "grain", "dairy"];
+const LS_RECIPES = "tmp_recipes_v1";
+const LS_PLAN = "tmp_plan_v1";
+const LS_SHOP = "tmp_shop_checked_v1";
+
+const SEED_RECIPES = [
+  // ---- Breakfast ----
+  { id:"s-b1", name:"Banana Oat Pancakes", cat:"breakfast", time:15, tags:["fruit","grain","protein"],
+    ingredients:["1 ripe banana","1 egg","1/2 cup rolled oats","1/4 cup whole milk","1/4 tsp cinnamon","Butter for the pan"],
+    steps:["Blend banana, egg, oats, milk, and cinnamon until smooth.","Cook small pancakes in a lightly buttered pan, 2 minutes per side.","Cool, then cut into strips."],
+    note:"Naturally sweet, so no syrup needed. Strips are easy for little hands." },
+  { id:"s-b2", name:"Veggie Egg Muffins", cat:"breakfast", time:25, tags:["protein","veggie","dairy","iron"],
+    ingredients:["4 eggs","1/4 cup whole milk","1/4 cup finely chopped spinach","1/4 cup finely diced bell pepper","1/4 cup shredded cheese"],
+    steps:["Whisk eggs and milk, stir in veggies and cheese.","Pour into a greased mini-muffin tin.","Bake at 350°F (175°C) for 15–18 minutes until set."],
+    note:"Make a batch on Sunday — they keep 3 days in the fridge and freeze well." },
+  { id:"s-b3", name:"Overnight Oats with Berries", cat:"breakfast", time:5, tags:["grain","fruit","dairy"],
+    ingredients:["1/2 cup rolled oats","1/2 cup whole milk","2 tbsp plain whole-milk yogurt","1/4 cup mashed berries","Pinch of cinnamon"],
+    steps:["Stir everything together in a jar.","Refrigerate overnight.","Serve cold or warmed slightly."],
+    note:"Mash berries well; quarter any whole blueberries for under-2s." },
+  { id:"s-b4", name:"Scrambled Eggs & Avocado Toast Fingers", cat:"breakfast", time:10, tags:["protein","iron","veggie","grain"],
+    ingredients:["2 eggs","1 tsp butter","1/2 ripe avocado","1 slice whole-grain bread"],
+    steps:["Scramble eggs softly in butter.","Toast bread lightly and mash avocado on top.","Cut toast into fingers, serve with eggs."],
+    note:"Soft scramble is easier to chew than firm. Skip added salt." },
+  { id:"s-b5", name:"Yogurt Parfait with Soft Fruit", cat:"breakfast", time:5, tags:["dairy","fruit","grain"],
+    ingredients:["1/2 cup plain whole-milk yogurt","1/4 cup diced soft fruit (peach, banana, ripe pear)","1 tbsp finely crushed O-cereal or soft granola"],
+    steps:["Layer yogurt and fruit in a small cup.","Top with a light sprinkle of crushed cereal."],
+    note:"Use plain yogurt — fruit provides the sweetness without added sugar." },
+  { id:"s-b6", name:"Spinach Banana Mini Muffins", cat:"breakfast", time:30, tags:["fruit","veggie","grain"],
+    ingredients:["1 cup packed spinach","1 ripe banana","1 egg","1/2 cup whole milk","2 tbsp melted butter","1 cup whole-wheat flour","1 tsp baking powder","1/2 tsp cinnamon"],
+    steps:["Blend spinach, banana, egg, milk, and butter until smooth.","Fold in flour, baking powder, and cinnamon.","Bake in a mini-muffin tin at 350°F (175°C) for 12–14 minutes."],
+    note:"Green muffins are a hit — freeze extras and thaw overnight." },
+  { id:"s-b7", name:"Apple Cinnamon Porridge", cat:"breakfast", time:12, tags:["grain","fruit","dairy"],
+    ingredients:["1/2 cup rolled oats","1 cup whole milk","1/2 apple, peeled and grated","1/4 tsp cinnamon"],
+    steps:["Simmer oats and milk 5 minutes, stirring.","Stir in grated apple and cinnamon, cook 2 more minutes.","Cool to warm before serving."],
+    note:"Grated apple softens right into the oats — no chunks to manage." },
+  { id:"s-b8", name:"Cottage Cheese Toast with Pear", cat:"breakfast", time:5, tags:["dairy","protein","fruit","grain"],
+    ingredients:["1 slice whole-grain bread","1/4 cup whole-milk cottage cheese","1/4 ripe pear, thinly sliced"],
+    steps:["Toast the bread lightly.","Spread cottage cheese on top and lay on thin pear slices.","Cut into small squares."],
+    note:"Ripe, soft pear only — firm pear is a chew hazard for young toddlers." },
+
+  // ---- Lunch ----
+  { id:"s-l1", name:"Turkey & Cheese Pinwheels", cat:"lunch", time:10, tags:["protein","dairy","grain","veggie"],
+    ingredients:["1 whole-wheat tortilla","2 thin slices low-sodium turkey","1 slice cheese","2 tbsp cream cheese","A few thin cucumber sticks on the side"],
+    steps:["Spread cream cheese on the tortilla.","Layer turkey and cheese, roll tightly.","Slice into pinwheels; serve with cucumber sticks."],
+    note:"Choose low-sodium deli meat and keep portions small." },
+  { id:"s-l2", name:"Black Bean Mini Quesadilla", cat:"lunch", time:12, tags:["protein","iron","grain","dairy","veggie"],
+    ingredients:["1 small tortilla","1/4 cup mashed black beans","2 tbsp shredded cheese","1 tbsp finely diced tomato"],
+    steps:["Spread mashed beans on half the tortilla, top with cheese and tomato.","Fold and toast in a dry pan until the cheese melts.","Cool and cut into small wedges."],
+    note:"Beans are a great iron source — mash well for easy eating." },
+  { id:"s-l3", name:"Hummus Plate with Pita & Soft Veggies", cat:"lunch", time:10, tags:["protein","iron","veggie","grain"],
+    ingredients:["3 tbsp hummus","1/2 whole-wheat pita, cut in strips","Steamed carrot sticks","Steamed broccoli florets","A few halved cherry tomatoes (quartered for under-2s)"],
+    steps:["Steam the veggies until fork-soft.","Arrange everything on a plate for dipping."],
+    note:"Dipping makes veggies fun — let them make a mess." },
+  { id:"s-l4", name:"Pasta with Hidden-Veggie Tomato Sauce", cat:"lunch", time:20, tags:["grain","veggie","dairy"],
+    ingredients:["1/2 cup small pasta (ditalini or shells)","1/2 cup tomato sauce","2 tbsp grated zucchini or carrot","1 tbsp grated parmesan","1 tsp olive oil"],
+    steps:["Cook pasta until very soft.","Simmer sauce with grated veggies for 5 minutes.","Toss together with olive oil and parmesan."],
+    note:"Grated veggies vanish into the sauce. Make extra sauce and freeze in cubes." },
+  { id:"s-l5", name:"Chicken & Sweet Potato Bites", cat:"lunch", time:25, tags:["protein","iron","veggie"],
+    ingredients:["1/2 cooked chicken breast, shredded","1/2 baked sweet potato","1 tbsp plain yogurt","Pinch of mild paprika"],
+    steps:["Mash sweet potato with yogurt and paprika.","Fold in finely shredded chicken.","Serve as a mash or roll into small bites."],
+    note:"Great use for leftover roast chicken." },
+  { id:"s-l6", name:"Egg Salad Sandwich Fingers", cat:"lunch", time:12, tags:["protein","iron","grain"],
+    ingredients:["1 hard-boiled egg","1 tsp mayonnaise or plain yogurt","1 slice whole-grain bread","A few soft avocado slices"],
+    steps:["Mash egg with mayo or yogurt.","Spread on bread, top with avocado, and fold.","Cut into narrow fingers."],
+    note:"Cut crusts off for younger toddlers if they struggle with them." },
+  { id:"s-l7", name:"Salmon Rice Balls", cat:"lunch", time:15, tags:["protein","iron","grain"],
+    ingredients:["1/4 cup cooked salmon, flaked (bones removed)","1/2 cup cooked sticky rice","1 tsp low-sodium soy sauce","Pinch of sesame seeds"],
+    steps:["Mix salmon, rice, and soy sauce.","With damp hands, press into small balls.","Roll lightly in sesame seeds."],
+    note:"Canned salmon works — pick low-sodium and check for bones." },
+  { id:"s-l8", name:"Lentil Veggie Soup with Bread Fingers", cat:"lunch", time:35, tags:["protein","iron","veggie","grain"],
+    ingredients:["1/4 cup red lentils","1 cup low-sodium vegetable broth","2 tbsp diced carrot","2 tbsp diced celery","1 tbsp tomato paste","Whole-grain bread for dipping"],
+    steps:["Simmer lentils and veggies in broth 20–25 minutes until soft.","Stir in tomato paste; mash slightly for a thicker texture.","Serve warm with bread fingers for dipping."],
+    note:"Red lentils cook fast and turn perfectly mushy. Freezes well." },
+
+  // ---- Snacks ----
+  { id:"s-s1", name:"Banana with Thin Peanut Butter", cat:"snack", time:3, tags:["fruit","protein"],
+    ingredients:["1/2 banana, sliced","1 tsp smooth peanut butter, thinned with a little warm water"],
+    steps:["Slice banana into rounds.","Drizzle with thinned peanut butter."],
+    note:"Always thin nut butters — thick globs are a choking hazard. Skip if allergic; sunflower butter works too." },
+  { id:"s-s2", name:"Cheese Cubes & Soft Fruit", cat:"snack", time:3, tags:["dairy","fruit","protein"],
+    ingredients:["Small cubes of mild cheddar or mozzarella","Diced ripe peach, melon, or kiwi"],
+    steps:["Cut cheese into pea-to-fingertip-size cubes.","Serve with diced soft fruit."],
+    note:"Keep cubes small and soft; string cheese pulled into thin strips also works." },
+  { id:"s-s3", name:"Quartered Grapes & Crackers", cat:"snack", time:3, tags:["fruit","grain"],
+    ingredients:["6–8 grapes, quartered lengthwise","A few whole-grain crackers"],
+    steps:["Quarter every grape lengthwise — always.","Serve with crackers."],
+    note:"Whole or halved grapes are a top choking hazard — quarter them until at least age 4." },
+  { id:"s-s4", name:"Steamed Veggie Sticks with Yogurt Dip", cat:"snack", time:10, tags:["veggie","dairy"],
+    ingredients:["Carrot and zucchini sticks, steamed soft","1/4 cup plain whole-milk yogurt","Tiny squeeze of lemon","Pinch of dill (optional)"],
+    steps:["Steam veggie sticks until fork-soft, then cool.","Stir lemon and dill into yogurt for dipping."],
+    note:"Raw carrot is too hard for toddlers — steaming makes it safe and sweet." },
+  { id:"s-s5", name:"Berry-Spinach Mini Smoothie", cat:"snack", time:5, tags:["fruit","veggie","dairy"],
+    ingredients:["1/4 cup frozen berries","Small handful of spinach","1/4 banana","1/3 cup whole milk or yogurt"],
+    steps:["Blend everything until completely smooth.","Serve a small cup with a straw."],
+    note:"Keep smoothie portions small so they still eat solid meals." },
+  { id:"s-s6", name:"Thin Apple Slices with Sunflower Butter", cat:"snack", time:5, tags:["fruit","protein"],
+    ingredients:["1/2 apple, peeled and sliced paper-thin","1 tsp sunflower seed butter, thinned"],
+    steps:["Slice apple very thinly (thick raw apple is a choking risk).","Spread a thin layer of sunflower butter on each slice."],
+    note:"For under-2s, soften apple slices in the microwave for 30 seconds." },
+  { id:"s-s7", name:"Yogurt with Mashed Berries", cat:"snack", time:3, tags:["dairy","fruit"],
+    ingredients:["1/2 cup plain whole-milk yogurt","1/4 cup berries, mashed"],
+    steps:["Mash berries with a fork.","Swirl into yogurt."],
+    note:"Swirling fruit in beats flavored yogurts, which are high in added sugar." },
+
+  // ---- Dinner ----
+  { id:"s-d1", name:"Chicken Meatballs with Peas & Mash", cat:"dinner", time:35, tags:["protein","iron","veggie"],
+    ingredients:["1/2 lb ground chicken","2 tbsp breadcrumbs","1 egg","2 tbsp grated zucchini","1 cup potato, mashed with milk and butter","1/2 cup peas"],
+    steps:["Mix chicken, breadcrumbs, egg, and zucchini; roll into small meatballs.","Bake at 400°F (200°C) for 15–18 minutes until cooked through.","Serve quartered with mash and soft-cooked peas."],
+    note:"Batch and freeze meatballs — they reheat in minutes." },
+  { id:"s-d2", name:"Salmon, Sweet Potato & Broccoli", cat:"dinner", time:30, tags:["protein","iron","veggie"],
+    ingredients:["1 small salmon fillet","1/2 sweet potato, cubed","4–5 broccoli florets","1 tsp olive oil","Squeeze of lemon"],
+    steps:["Roast sweet potato cubes with olive oil at 400°F (200°C) for 15 minutes.","Add salmon and broccoli to the tray; roast 12 more minutes.","Flake salmon carefully, checking for bones."],
+    note:"Salmon's omega-3s support brain development — aim for fish twice a week." },
+  { id:"s-d3", name:"Mild Lentil Dal with Rice", cat:"dinner", time:35, tags:["protein","iron","veggie","grain"],
+    ingredients:["1/2 cup red lentils","1 1/4 cups water","1/4 tsp turmeric","1/2 tsp mild curry powder","1 tsp butter or ghee","2 tbsp finely diced tomato","Cooked soft rice"],
+    steps:["Simmer lentils with turmeric until completely soft, about 20 minutes.","In butter, warm curry powder and tomato 2 minutes; stir into the dal.","Serve over soft rice, mashed together a little."],
+    note:"A gentle way to build a spice palate — mild, not hot." },
+  { id:"s-d4", name:"Turkey Bolognese with Small Pasta", cat:"dinner", time:30, tags:["protein","iron","veggie","grain"],
+    ingredients:["1/4 lb ground turkey","1/2 cup tomato sauce","2 tbsp grated carrot","1 tbsp grated onion","1/2 cup small pasta","Grated parmesan"],
+    steps:["Brown turkey, then add grated veggies and sauce; simmer 10 minutes.","Cook pasta until very soft.","Combine and top with a little parmesan."],
+    note:"Doubles easily — the sauce freezes well in small portions." },
+  { id:"s-d5", name:"Chicken & Veggie Fried Rice", cat:"dinner", time:20, tags:["protein","veggie","grain"],
+    ingredients:["1/2 cup cooked rice (day-old is best)","1/4 cup cooked chicken, finely chopped","2 tbsp peas","2 tbsp finely diced carrot, steamed","1 egg","1 tsp low-sodium soy sauce","1 tsp oil"],
+    steps:["Scramble the egg in oil and set aside.","Stir-fry rice, chicken, and veggies 3–4 minutes.","Return egg, add soy sauce, and toss."],
+    note:"A great leftovers vehicle — swap in whatever soft veggies you have." },
+  { id:"s-d6", name:"Baked Fish Fingers with Peas", cat:"dinner", time:25, tags:["protein","veggie","grain"],
+    ingredients:["1 white fish fillet (cod or haddock), cut in strips","1/4 cup flour","1 egg, beaten","1/2 cup fine breadcrumbs","1/2 cup peas","1 tsp olive oil"],
+    steps:["Coat fish strips in flour, then egg, then breadcrumbs.","Bake on an oiled tray at 425°F (220°C) for 12–15 minutes, flipping once.","Serve with soft-cooked peas; check carefully for bones."],
+    note:"Homemade fish fingers have way less salt than store-bought." },
+  { id:"s-d7", name:"Butternut Squash Mac & Cheese", cat:"dinner", time:30, tags:["grain","veggie","dairy"],
+    ingredients:["3/4 cup small macaroni","1/2 cup cooked butternut squash, mashed","1/3 cup shredded cheddar","1/4 cup whole milk","1 tsp butter"],
+    steps:["Cook macaroni until soft.","Warm squash, milk, and butter; stir in cheese until melted.","Toss sauce with pasta."],
+    note:"The squash makes it creamy and sneaks in a vegetable serving." },
+  { id:"s-d8", name:"Soft Beef & Veggie Stew", cat:"dinner", time:120, tags:["protein","iron","veggie"],
+    ingredients:["1/2 lb stew beef, small cubes","1 carrot, diced","1 potato, diced","1/4 cup peas","1 1/2 cups low-sodium beef broth","1 tbsp tomato paste"],
+    steps:["Brown beef, then add broth and tomato paste.","Simmer covered 1.5 hours until the beef falls apart.","Add veggies for the last 20 minutes; shred beef before serving."],
+    note:"Beef is one of the best iron sources for toddlers — long cooking makes it soft enough. Slow cooker friendly." },
+];
+
+/* ============ Storage ============ */
+
+function loadRecipes() {
+  try {
+    const raw = localStorage.getItem(LS_RECIPES);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr) && arr.length) return arr;
+    }
+  } catch (e) { /* fall through to seeds */ }
+  const seeds = JSON.parse(JSON.stringify(SEED_RECIPES));
+  saveRecipes(seeds);
+  return seeds;
+}
+function saveRecipes(arr) {
+  try { localStorage.setItem(LS_RECIPES, JSON.stringify(arr)); } catch (e) {}
+}
+function loadPlan() {
+  try {
+    const raw = localStorage.getItem(LS_PLAN);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return null;
+}
+function savePlan(p) {
+  try { localStorage.setItem(LS_PLAN, JSON.stringify(p)); } catch (e) {}
+}
+function loadChecks() {
+  try { return JSON.parse(localStorage.getItem(LS_SHOP)) || {}; } catch (e) { return {}; }
+}
+function saveChecks(c) {
+  try { localStorage.setItem(LS_SHOP, JSON.stringify(c)); } catch (e) {}
+}
+
+let recipes = loadRecipes();
+let plan = loadPlan();
+let shopChecks = loadChecks();
+let activeCat = "all";
+
+/* ============ Helpers ============ */
+
+const $ = (sel) => document.querySelector(sel);
+const byId = (id) => recipes.find(r => r.id === id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+function mondayOf(d) {
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const day = x.getDay();
+  x.setDate(x.getDate() - ((day + 6) % 7)); // back to Monday
+  return x;
+}
+function fmtDate(d) {
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+function isoDay(d) {
+  return d.toISOString().slice(0, 10);
+}
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ============ Plan generation ============ */
+
+// Deal recipes of each category across the 7 days so nothing repeats
+// until that category's pool is exhausted, then reshuffle and continue.
+function generatePlan(existing) {
+  const start = mondayOf(new Date());
+  const keepLocks = existing && existing.weekStart === isoDay(start);
+
+  // Collect every locked recipe up front so no other day deals the same dish.
+  const lockedIds = new Set();
+  if (keepLocks) {
+    for (const day of existing.days) {
+      for (const cat of CATS) {
+        if (day.locked && day.locked[cat] && byId(day.meals[cat])) lockedIds.add(day.meals[cat]);
+      }
+    }
+  }
+  const pools = {};
+  const deal = (cat) => {
+    if (!pools[cat] || !pools[cat].length) {
+      pools[cat] = shuffle(recipes.filter(r => r.cat === cat && !lockedIds.has(r.id)).map(r => r.id));
+      // tiny category where everything is locked: allow repeats rather than empty slots
+      if (!pools[cat].length) pools[cat] = shuffle(recipes.filter(r => r.cat === cat).map(r => r.id));
+    }
+    return pools[cat].length ? pools[cat].shift() : null;
+  };
+
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(start);
+    date.setDate(start.getDate() + i);
+    const prev = keepLocks ? existing.days[i] : null;
+    const meals = {}, locked = {};
+    for (const cat of CATS) {
+      if (prev && prev.locked && prev.locked[cat] && byId(prev.meals[cat])) {
+        meals[cat] = prev.meals[cat];
+        locked[cat] = true;
+      } else {
+        meals[cat] = deal(cat);
+        locked[cat] = false;
+      }
+    }
+    days.push({ date: isoDay(date), meals, locked });
+  }
+  return { weekStart: isoDay(start), days };
+}
+
+function swapSlot(dayIdx, cat) {
+  const day = plan.days[dayIdx];
+  const usedThisWeek = new Set(plan.days.map(d => d.meals[cat]));
+  const current = day.meals[cat];
+  let candidates = recipes.filter(r => r.cat === cat && r.id !== current && !usedThisWeek.has(r.id));
+  if (!candidates.length) {
+    candidates = recipes.filter(r => r.cat === cat && r.id !== current);
+  }
+  if (!candidates.length) return;
+  day.meals[cat] = candidates[Math.floor(Math.random() * candidates.length)].id;
+  savePlan(plan);
+  renderPlan();
+  renderShopping();
+}
+
+function toggleLock(dayIdx, cat) {
+  plan.days[dayIdx].locked[cat] = !plan.days[dayIdx].locked[cat];
+  savePlan(plan);
+  renderPlan();
+}
+
+/* ============ Rendering: plan ============ */
+
+function renderPlan() {
+  const grid = $("#week-grid");
+  if (!plan) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      No plan yet — hit <strong>Generate Week</strong> and a full week of meals appears.</div>`;
+    $("#week-title").textContent = "This Week";
+    return;
+  }
+  const start = new Date(plan.weekStart + "T00:00:00");
+  const end = new Date(start); end.setDate(start.getDate() + 6);
+  $("#week-title").textContent = `Week of ${fmtDate(start)} – ${fmtDate(end)}`;
+
+  const todayIso = isoDay(new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000));
+  grid.innerHTML = plan.days.map((day, i) => {
+    const d = new Date(day.date + "T00:00:00");
+    const dow = d.toLocaleDateString(undefined, { weekday: "short" });
+    const slots = CATS.map(cat => {
+      const r = byId(day.meals[cat]);
+      const lockCls = day.locked[cat] ? "locked" : "";
+      const lockIcon = day.locked[cat] ? "🔒" : "🔓";
+      return `<div class="slot">
+        <div class="slot-label"><span>${CAT_LABELS[cat]}</span>
+          <span class="slot-actions">
+            <button title="Swap this meal" onclick="swapSlot(${i}, '${cat}')">🔁</button>
+            <button title="Lock so Generate keeps it" class="${lockCls}" onclick="toggleLock(${i}, '${cat}')">${lockIcon}</button>
+          </span>
+        </div>
+        ${r
+          ? `<div class="slot-name" onclick="openDetail('${r.id}')">${esc(r.name)}</div>
+             <div class="slot-tags">${r.tags.map(t => `<span class="tag ${t}">${t}</span>`).join("")}</div>`
+          : `<div class="slot-name empty">No ${cat} recipes yet</div>`}
+      </div>`;
+    }).join("");
+    return `<div class="day ${day.date === todayIso ? "today" : ""}">
+      <div class="day-head"><span class="dow">${dow}</span><span class="date">${fmtDate(d)}</span></div>
+      ${slots}
+    </div>`;
+  }).join("");
+}
+
+/* ============ Rendering: recipes ============ */
+
+function renderFilters() {
+  const cats = ["all", ...CATS];
+  $("#cat-filters").innerHTML = cats.map(c =>
+    `<button class="${activeCat === c ? "active" : ""}" onclick="setCat('${c}')">
+      ${c === "all" ? "All" : CAT_LABELS[c]}</button>`).join("");
+}
+function setCat(c) { activeCat = c; renderFilters(); renderRecipes(); }
+
+function renderRecipes() {
+  const list = recipes.filter(r => activeCat === "all" || r.cat === activeCat);
+  const grid = $("#recipe-grid");
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">No recipes here yet — add one!</div>`;
+    return;
+  }
+  const order = { breakfast: 0, lunch: 1, snack: 2, dinner: 3 };
+  list.sort((a, b) => (order[a.cat] - order[b.cat]) || a.name.localeCompare(b.name));
+  grid.innerHTML = list.map(r => `
+    <div class="recipe-card" onclick="openDetail('${r.id}')">
+      <div class="cat">${CAT_LABELS[r.cat]}</div>
+      <h3>${esc(r.name)}</h3>
+      <div class="meta">⏱ ${r.time} min · ${r.ingredients.length} ingredients</div>
+      <div class="slot-tags">${r.tags.map(t => `<span class="tag ${t}">${t}</span>`).join("")}</div>
+    </div>`).join("");
+}
+
+/* ============ Recipe detail modal ============ */
+
+function openDetail(id) {
+  const r = byId(id);
+  if (!r) return;
+  $("#detail-modal").innerHTML = `
+    <button class="close" onclick="closeDetail()">&times;</button>
+    <h2>${esc(r.name)}</h2>
+    <div class="meta">${CAT_LABELS[r.cat]} · ⏱ ${r.time} min</div>
+    <div class="slot-tags">${r.tags.map(t => `<span class="tag ${t}">${t}</span>`).join("")}</div>
+    <h4>Ingredients</h4>
+    <ul>${r.ingredients.map(i => `<li>${esc(i)}</li>`).join("")}</ul>
+    <h4>Steps</h4>
+    <ol>${r.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol>
+    ${r.note ? `<div class="note">💡 ${esc(r.note)}</div>` : ""}
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="editRecipe('${r.id}')">Edit</button>
+      <button class="btn secondary" onclick="deleteRecipe('${r.id}')">Delete</button>
+    </div>`;
+  $("#detail-backdrop").classList.add("open");
+}
+function closeDetail() { $("#detail-backdrop").classList.remove("open"); }
+
+function deleteRecipe(id) {
+  const r = byId(id);
+  if (!r || !confirm(`Delete "${r.name}"?`)) return;
+  recipes = recipes.filter(x => x.id !== id);
+  saveRecipes(recipes);
+  closeDetail();
+  renderAll();
+}
+
+/* ============ Add / edit form ============ */
+
+function openForm(r) {
+  $("#form-title").textContent = r ? "Edit Recipe" : "Add Recipe";
+  $("#f-id").value = r ? r.id : "";
+  $("#f-name").value = r ? r.name : "";
+  $("#f-cat").value = r ? r.cat : "dinner";
+  $("#f-time").value = r ? r.time : 15;
+  $("#f-ingredients").value = r ? r.ingredients.join("\n") : "";
+  $("#f-steps").value = r ? r.steps.join("\n") : "";
+  $("#f-note").value = r ? (r.note || "") : "";
+  $("#f-tags").innerHTML = TAGS.map(t =>
+    `<label><input type="checkbox" value="${t}" ${r && r.tags.includes(t) ? "checked" : ""}> ${t}</label>`).join("");
+  $("#form-backdrop").classList.add("open");
+}
+function closeForm() { $("#form-backdrop").classList.remove("open"); }
+function editRecipe(id) { closeDetail(); openForm(byId(id)); }
+
+$("#recipe-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const id = $("#f-id").value || ("u-" + Date.now());
+  const lines = (v) => v.split("\n").map(s => s.trim()).filter(Boolean);
+  const rec = {
+    id,
+    name: $("#f-name").value.trim(),
+    cat: $("#f-cat").value,
+    time: Math.max(1, parseInt($("#f-time").value, 10) || 15),
+    tags: [...$("#f-tags").querySelectorAll("input:checked")].map(c => c.value),
+    ingredients: lines($("#f-ingredients").value),
+    steps: lines($("#f-steps").value),
+    note: $("#f-note").value.trim(),
+  };
+  const idx = recipes.findIndex(r => r.id === id);
+  if (idx >= 0) recipes[idx] = rec; else recipes.push(rec);
+  saveRecipes(recipes);
+  closeForm();
+  renderAll();
+});
+
+function restoreSeeds() {
+  let added = 0;
+  for (const s of SEED_RECIPES) {
+    if (!byId(s.id)) { recipes.push(JSON.parse(JSON.stringify(s))); added++; }
+  }
+  saveRecipes(recipes);
+  renderAll();
+  alert(added ? `Restored ${added} starter recipe${added > 1 ? "s" : ""}.` : "All starter recipes are already in your library.");
+}
+
+/* ============ Shopping list ============ */
+
+function renderShopping() {
+  const wrap = $("#shop-list");
+  if (!plan) {
+    wrap.innerHTML = `<div class="empty-state">Generate a week first — the shopping list builds itself from the plan.</div>`;
+    return;
+  }
+  // Aggregate ingredients per category, deduped by text, counting uses.
+  const groups = {};
+  for (const cat of CATS) groups[cat] = new Map();
+  const counted = {}; // recipe counted once per appearance in the week
+  for (const day of plan.days) {
+    for (const cat of CATS) {
+      const r = byId(day.meals[cat]);
+      if (!r) continue;
+      for (const ing of r.ingredients) {
+        const key = ing.toLowerCase();
+        const entry = groups[cat].get(key) || { text: ing, uses: 0 };
+        entry.uses++;
+        groups[cat].set(key, entry);
+      }
+    }
+  }
+  wrap.innerHTML = CATS.map(cat => {
+    const items = [...groups[cat].values()].sort((a, b) => a.text.localeCompare(b.text));
+    if (!items.length) return "";
+    return `<div class="shop-group">
+      <h3>${CAT_LABELS[cat]}</h3>
+      ${items.map(it => {
+        const key = cat + "|" + it.text.toLowerCase();
+        const checked = !!shopChecks[key];
+        return `<label class="shop-item ${checked ? "done" : ""}">
+          <input type="checkbox" ${checked ? "checked" : ""} onchange="toggleCheck('${esc(key).replace(/'/g, "\\'")}', this.checked)">
+          <span>${esc(it.text)}</span>
+          ${it.uses > 1 ? `<span class="uses">×${it.uses} meals</span>` : ""}
+        </label>`;
+      }).join("")}
+    </div>`;
+  }).join("") || `<div class="empty-state">Nothing to buy — the plan is empty.</div>`;
+}
+function toggleCheck(key, val) {
+  if (val) shopChecks[key] = true; else delete shopChecks[key];
+  saveChecks(shopChecks);
+  renderShopping();
+}
+
+/* ============ Tabs & init ============ */
+
+document.querySelectorAll(".tabs button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    btn.classList.add("active");
+    $("#view-" + btn.dataset.view).classList.add("active");
+  });
+});
+
+$("#btn-generate").addEventListener("click", () => {
+  plan = generatePlan(plan);
+  savePlan(plan);
+  renderPlan();
+  renderShopping();
+});
+$("#btn-add-recipe").addEventListener("click", () => openForm(null));
+$("#btn-restore").addEventListener("click", restoreSeeds);
+$("#btn-clear-checks").addEventListener("click", () => {
+  shopChecks = {};
+  saveChecks(shopChecks);
+  renderShopping();
+});
+document.querySelectorAll(".modal-backdrop").forEach(bd => {
+  bd.addEventListener("click", (e) => { if (e.target === bd) bd.classList.remove("open"); });
+});
+
+function renderAll() {
+  renderFilters();
+  renderRecipes();
+  renderPlan();
+  renderShopping();
+}
+renderAll();
+</script>
+</body>
+</html>
