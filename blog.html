@@ -3,61 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contech Blog · Abhitej Reddy Addula</title>
-<meta name="description" content="Writing on where construction meets technology: scheduling, cost, and data.">
+<title>Blog · Abhitej Reddy Addula</title>
+<meta name="description" content="Notes on construction scheduling, cost and data by Abhitej Reddy Addula.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<style>
-  .blog-head > .wrap { padding-top: 80px; padding-bottom: 40px; }
-  .blog-head h1 { font-size: clamp(2.2em, 6vw, 3.2em); letter-spacing: -0.02em; line-height: 1.1; }
-  .blog-head p { color: var(--muted); font-size: 1.15em; margin-top: 12px; }
-  .posts { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding-bottom: 96px; }
-  main.wrap { min-height: 40vh; }
-</style>
 </head>
 <body>
-
-<nav class="nav">
-  <div class="wrap">
-    <a class="brand" href="index.html">abhitej<span>.</span>addula</a>
-    <ul class="nav-links">
+<header class="site-header">
+  <a class="site-name" href="index.html">Abhitej Reddy Addula</a>
+  <nav aria-label="Main">
+    <ul>
       <li><a href="profile.html">Profile</a></li>
-      <li><a href="music.html">Music</a></li>
-      <li><a href="blog.html" aria-current="page">Blog</a></li>
       <li><a href="projects.html">Projects</a></li>
+      <li><a href="blog.html" aria-current="page">Blog</a></li>
     </ul>
-  </div>
-</nav>
-
-<header class="blog-head">
-  <div class="wrap">
-    <div class="eyebrow">Contech Blog</div>
-    <h1>Where construction meets technology</h1>
-    <p>Notes on scheduling, cost, and using data to build more predictably.</p>
-  </div>
+  </nav>
 </header>
 
-<main class="wrap">
-  <div class="posts">
-    <a class="post" href="article-takt-scheduling.html">
-      <div class="post-meta">Jan 2, 2026 · 5 min read</div>
-      <div class="post-title">What is Takt Scheduling?</div>
-      <p class="post-desc">Construction projects are notorious for delays and unpredictable workflows. Takt planning brings manufacturing-level rhythm to how we build.</p>
-      <ul class="chips"><li>Scheduling</li><li>Lean Construction</li><li>Productivity</li></ul>
-      <span class="post-more">Read article →</span>
-    </a>
-    <!-- Future articles go here -->
-  </div>
+<main>
+  <h1>Blog</h1>
+  <p class="lead">Notes on construction scheduling, cost and data.</p>
+
+  <dl class="entries">
+    <dt><a href="article-takt-scheduling.html">What is Takt Scheduling?</a> <span>Jan 2, 2026</span></dt>
+    <dd>How zone-based Takt planning makes construction schedules predictable. 5 min read.</dd>
+  </dl>
 </main>
 
-<footer class="footer">
-  <div class="wrap">
-    <span>© 2026 Abhitej Reddy Addula</span>
-    <a href="mailto:abhitej.addula@gmail.com">abhitej.addula@gmail.com</a>
-  </div>
+<footer class="site-footer">
+  <a href="mailto:abhitej.addula@gmail.com">abhitej.addula@gmail.com</a>
 </footer>
-
 </body>
 </html>
